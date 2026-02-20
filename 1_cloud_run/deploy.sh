@@ -46,6 +46,15 @@ gcloud services enable \
     cloudbuild.googleapis.com \
     artifactregistry.googleapis.com
 
+# Grant the Cloud Build service account access to the GCS bucket.
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+GCE_SERVICE_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
+echo "==> Granting Cloud Build permissions to access source"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:${GCE_SERVICE_ACCOUNT}" \
+    --role="roles/storage.objectViewer" --condition=None
+
 # Create the Artifact Registry repository if it doesn't exist.
 if ! gcloud artifacts repositories describe "$REPOSITORY_NAME" --location="$REGION" --project="$PROJECT_ID" >/dev/null 2>&1; then
     echo "==> Creating Artifact Registry repository: $REPOSITORY_NAME"
