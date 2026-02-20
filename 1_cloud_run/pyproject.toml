@@ -1,0 +1,11 @@
+[project]
+name = "1_cloud_run"
+version = "0.1.0"
+description = "An example Fast MCP server for deployment on Cloud Run"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=2.13.3",
+    "google-adk>=1.19.0",
+    "python-dotenv>=1.0.0",
+]
