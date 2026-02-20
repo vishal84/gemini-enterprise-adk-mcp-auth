@@ -4,7 +4,7 @@ In this section, you will authenticate with your Google Cloud project and deploy
 
 To deploy the Cloud Run server, you will first need to authenticate the `gcloud` CLI to your GCP project.
 
-## 1. Authenticate to Your GCP Project (CLI)
+## 1. 🔑 Authenticate to Your GCP Project (CLI)
 
 1. Sign in to Google Cloud in your browser from the CLI.
 
@@ -36,3 +36,34 @@ gcloud config get-value project
 gcloud auth list
 ```
 
+## 2. 🚀 Deploy to Cloud Run
+
+Once you have authenticated to your GCP project, you can deploy the MCP server to Cloud Run using the provided `deploy.sh` script.
+
+1.  Navigate to the `1_cloud_run` directory from the root of the project:
+
+    ```bash
+    cd 1_cloud_run
+    ```
+
+2.  Before running the script, you may want to create a `.env` file to configure the deployment. You can copy the example file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    Then, edit the `.env` file with your desired settings for `PROJECT_ID`, `REGION`, etc. If you don't set `PROJECT_ID` in the `.env` file, the script will try to use the one from your `gcloud` configuration.
+
+3.  Make the deployment script executable:
+
+    ```bash
+    chmod +x deploy.sh
+    ```
+
+4.  Run the deployment script:
+
+    ```bash
+    ./deploy.sh
+    ```
+
+The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service.
