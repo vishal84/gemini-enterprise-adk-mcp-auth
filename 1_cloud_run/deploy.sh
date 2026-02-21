@@ -64,6 +64,12 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --role="roles/run.admin" \
     --condition=None > /dev/null
 
+# Grant Service Account User role to the Compute Engine SA to allow it to act as the Cloud Run service's identity
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/iam.serviceAccountUser" \
+    --condition=None > /dev/null
+
 echo "🚀 Starting Cloud Build with the following configuration:"
 echo "   Project: ${PROJECT_ID}"
 echo "   Region: ${REGION}"
