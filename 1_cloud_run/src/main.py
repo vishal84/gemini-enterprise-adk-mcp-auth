@@ -211,6 +211,9 @@ def get_code_snippet(type: str) -> str:
 
     return f"```{code_type}\n{code_snippet}\n```"
 
+# Expose the underlying ASGI app for production web servers like Gunicorn
+asgi_app = mcp.asgi
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
     logger.info(f"🚀 MCP server started on port {port}")

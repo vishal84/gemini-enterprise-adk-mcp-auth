@@ -86,3 +86,4 @@ Once you have authenticated to your GCP project, you can deploy the MCP server t
     ```
 
 The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service.
+

@@ -1,0 +1,13 @@
+[project]
+name = "code-snippet-mcp-server"
+version = "0.1.0"
+description = "A FastMCP server for retrieving code snippets."
+requires-python = ">=3.9"
+dependencies = [
+    "fastmcp",
+    "google-cloud-aiplatform",
+    "gunicorn",
+]
+
+[tool.uv]
+dev-dependencies = []
