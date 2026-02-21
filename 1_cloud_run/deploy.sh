@@ -25,10 +25,7 @@ fi
 PROJECT_ID="${PROJECT_ID:-$(gcloud config get-value project)}"
 REGION="${REGION:-us-central1}"
 SERVICE_NAME="${SERVICE_NAME:-code-snippet-mcp-server}"
-REPOSITORY_NAME="${REPOSITORY_NAME:-$SERVICE_NAME}"
-IMAGE_NAME="${IMAGE_NAME:-$SERVICE_NAME}"
-IMAGE_TAG="${IMAGE_TAG:-latest}"
-ALLOW_UNAUTHENTICATED="${ALLOW_UNAUTHENTICATED:-true}"
+REPO_NAME="${REPO_NAME:-$SERVICE_NAME}"
 
 # Validate that PROJECT_ID is set.
 if [[ -z "$PROJECT_ID" ]]; then
@@ -37,52 +34,72 @@ if [[ -z "$PROJECT_ID" ]]; then
     exit 1
 fi
 
-# Define the image path for Artifact Registry.
-IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
-
-echo "==> Enabling required services"
+echo "🔧 Enabling required Google Cloud services (this may take a few minutes)..."
 gcloud services enable \
     run.googleapis.com \
+    artifactregistry.googleapis.com \
     cloudbuild.googleapis.com \
-    artifactregistry.googleapis.com
+    --project="${PROJECT_ID}"
 
-# Create the Artifact Registry repository if it doesn't exist.
-if ! gcloud artifacts repositories describe "$REPOSITORY_NAME" --location="$REGION" --project="$PROJECT_ID" >/dev/null 2>&1; then
-    echo "==> Creating Artifact Registry repository: $REPOSITORY_NAME"
-    gcloud artifacts repositories create "$REPOSITORY_NAME" \
+echo "🔐 Granting necessary IAM roles for deployment..."
+PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
+CLOUDBUILD_SA="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
+COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
+# Grant Cloud Run Admin role to the Cloud Build SA to allow it to deploy
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${CLOUDBUILD_SA}" \
+    --role="roles/run.admin" \
+    --condition=None > /dev/null
+
+# Grant Service Account User role to the Cloud Build SA to allow it to act as the Cloud Run service's identity
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${CLOUDBUILD_SA}" \
+    --role="roles/iam.serviceAccountUser" \
+    --condition=None > /dev/null
+
+# Grant Cloud Run Admin role to the default Compute Engine SA
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/run.admin" \
+    --condition=None > /dev/null
+
+# Grant Service Account User role to the Compute Engine SA to allow it to act as the Cloud Run service's identity
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/iam.serviceAccountUser" \
+    --condition=None > /dev/null
+
+echo "🚀 Starting Cloud Build with the following configuration:"
+echo "   Project: ${PROJECT_ID}"
+echo "   Region: ${REGION}"
+echo "   Repository: ${REPO_NAME}"
+echo "   Service: ${SERVICE_NAME}"
+
+echo "📦 Ensuring Artifact Registry repository '${REPO_NAME}' exists..."
+if ! gcloud artifacts repositories describe "${REPO_NAME}" --location="${REGION}" --project="${PROJECT_ID}" &>/dev/null; then
+    echo "   Repository not found. Creating it now..."
+    gcloud artifacts repositories create "${REPO_NAME}" \
         --repository-format=docker \
-        --location="$REGION" \
-        --description="Docker repository for $SERVICE_NAME"
+        --location="${REGION}" \
+        --description="Docker repository for the ${SERVICE_NAME} service" \
+        --project="${PROJECT_ID}"
 fi
 
-echo "==> Building container image with Cloud Build"
-gcloud builds submit --tag "$IMAGE" .
+# Submit the build with substitutions
+gcloud builds submit \
+  --config=cloudbuild.yaml \
+  --project="${PROJECT_ID}" \
+  --region="${REGION}" \
+  --substitutions="_REGION=${REGION},_REPO_NAME=${REPO_NAME},_SERVICE_NAME=${SERVICE_NAME}"
 
-echo "==> Deploying service to Cloud Run"
-DEPLOY_CMD=(
-    gcloud run deploy "$SERVICE_NAME"
-    --image "$IMAGE"
-    --region "$REGION"
-    --platform "managed"
-)
+echo "✅ Cloud Build completed successfully!"
 
-if [[ "$ALLOW_UNAUTHENTICATED" == "true" ]]; then
-    DEPLOY_CMD+=(--allow-unauthenticated)
+echo "🔗 Fetching deployed service URL..."
+SERVICE_URL=$(gcloud run services describe "${SERVICE_NAME}" --platform managed --region "${REGION}" --project "${PROJECT_ID}" --format="value(status.url)")
+
+if [[ -n "$SERVICE_URL" ]]; then
+    echo "🎉 Service is available at: ${SERVICE_URL}"
 else
-    DEPLOY_CMD+=(--no-allow-unauthenticated)
+    echo "⚠️ Could not retrieve service URL. Please check the Cloud Run console."
 fi
-
-# Execute the deployment command.
-"${DEPLOY_CMD[@]}"
-
-# Get the service URL.
-SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format='value(status.url)')"
-
-# Print deployment summary.
-echo ""
-echo "Deployment complete"
-echo "Project:  $PROJECT_ID"
-echo "Region:   $REGION"
-echo "Service:  $SERVICE_NAME"
-echo "Image:    $IMAGE"
-echo "URL:      $SERVICE_URL"

@@ -36,7 +36,26 @@ gcloud config get-value project
 gcloud auth list
 ```
 
-## 2. 🚀 Deploy to Cloud Run
+## 2. 🛠️ Install Local Dependencies with `uv`
+
+This project uses `uv` to manage Python dependencies. `uv` is an extremely fast Python package installer and resolver, written in Rust.
+
+1.  Install `uv` on your local system.
+
+    -   **macOS and Linux**:
+
+        ```bash
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        ```
+
+2.  Once `uv` is installed, you can install the project dependencies using `uv sync`.
+
+    ```bash
+    uv sync
+    ```
+
+
+## 3. 🚀 Deploy to Cloud Run
 
 Once you have authenticated to your GCP project, you can deploy the MCP server to Cloud Run using the provided `deploy.sh` script.
 
@@ -67,3 +86,4 @@ Once you have authenticated to your GCP project, you can deploy the MCP server t
     ```
 
 The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service.
+
