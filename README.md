@@ -17,7 +17,7 @@ The MCP server is a containerized FastAPI application that can be deployed to Go
 
 To deploy the Cloud Run server, you will first need to authenticate the `gcloud` CLI to your GCP project.
 
-## 1. 🔑 Authenticate to Your GCP Project (CLI)
+#### 1. 🔑 Authenticate to Your GCP Project (CLI)
 
 1. Sign in to Google Cloud in your browser from the CLI.
 
@@ -49,7 +49,7 @@ gcloud config get-value project
 gcloud auth list
 ```
 
-## 2. 🛠️ Install Local Dependencies with `uv`
+#### 2. 🛠️ Install Local Dependencies with `uv`
 
 This project uses `uv` to manage Python dependencies. To install `uv`, follow these steps:
 
@@ -68,7 +68,7 @@ This project uses `uv` to manage Python dependencies. To install `uv`, follow th
     ```
 
 
-## 3. 🚀 Deploy to Cloud Run
+#### 3. 🚀 Deploy to Cloud Run
 
 Once you have authenticated to your GCP project, you can deploy the MCP server to Cloud Run using the provided `deploy.sh` script.
 
@@ -78,7 +78,7 @@ Once you have authenticated to your GCP project, you can deploy the MCP server t
     cd 1_cloud_run
     ```
 
-2.  Before running the script, you may want to create a `.env` file to configure the deployment. You can copy the example file:
+2.  Before running the script, create a `.env` file to configure the deployment. You can copy the example file:
 
     ```bash
     cp .env.example .env

@@ -94,3 +94,12 @@ gcloud builds submit \
   --substitutions="_REGION=${REGION},_REPO_NAME=${REPO_NAME},_SERVICE_NAME=${SERVICE_NAME}"
 
 echo "✅ Cloud Build completed successfully!"
+
+echo "🔗 Fetching deployed service URL..."
+SERVICE_URL=$(gcloud run services describe "${SERVICE_NAME}" --platform managed --region "${REGION}" --project "${PROJECT_ID}" --format="value(status.url)")
+
+if [[ -n "$SERVICE_URL" ]]; then
+    echo "🎉 Service is available at: ${SERVICE_URL}"
+else
+    echo "⚠️ Could not retrieve service URL. Please check the Cloud Run console."
+fi
