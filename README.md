@@ -1,6 +1,6 @@
 # Gemini Enterprise ADK MCP Auth
 
-This repository provides a sample implementation of a Model Context Protocol (MCP) server for authenticating to Gemini Enterprise, along with agent definitions.
+This repository provides a sample implementation of a Model Context Protocol (MCP) server hosted on Cloud Run as well as two ADK agents that can perform end user authentication to perform actions on behalf of an end user.
 
 ## Project Structure
 
