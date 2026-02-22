@@ -10,22 +10,23 @@ if [[ -z "$PROJECT_ID" ]]; then
     exit 1
 fi
 
-echo "🤖 Ensuring AI Platform service identity exists for project ${PROJECT_ID}..."
-
-# This command is idempotent. It creates the service identity if it doesn't exist
-# or ensures it's enabled if it does. We pipe the output to /dev/null
-# as we will construct the email address ourselves in the next step.
-gcloud beta services identity create --service=aiplatform.googleapis.com --project="${PROJECT_ID}" >/dev/null
-
 # Get the project number, which is needed to construct the service account email.
 PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
 
-# The service identity email format is predictable.
-SERVICE_IDENTITY_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-aiplatform-re.iam.gserviceaccount.com"
+# The service account to create
+SA_NAME="code-snippet-sa"
+SERVICE_IDENTITY_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
-echo "🤖 AI Platform service identity email: ${SERVICE_IDENTITY_EMAIL}"
-
-echo "🤖 Granting additional roles to the default Agent Engine service account..."
+# Create the service account if it doesn't exist
+if ! gcloud iam service-accounts describe "${SERVICE_IDENTITY_EMAIL}" --project "${PROJECT_ID}" &> /dev/null; then
+    echo "🤖 Creating service account ${SERVICE_IDENTITY_EMAIL}..."
+    gcloud iam service-accounts create "${SA_NAME}" \
+        --display-name="Agent Engine Service Account" \
+        --project="${PROJECT_ID}" \
+        --condition=None > /dev/null
+else
+    echo "✅ Service account ${SERVICE_IDENTITY_EMAIL} already exists."
+fi
 
 # Grant Cloud Run Invoker role
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
@@ -39,13 +40,6 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --role="roles/logging.logWriter" \
     --condition=None > /dev/null
 
-echo "✅ Roles granted successfully."
-
- PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
- 
- # The service acount email format is predictable.
-SERVICE_IDENTITY_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-aiplatform-re.iam.gserviceaccount.com"
-echo "🤖 AI Platform Reasoning Engine Service Agent email: ${SERVICE_IDENTITY_EMAIL}"
 echo "✅ Roles granted successfully."
 
 # Prompt for user's email
