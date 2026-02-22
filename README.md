@@ -98,10 +98,12 @@ Once you have authenticated to your GCP project, you can deploy the MCP server t
     ./deploy.sh
     ```
 
-The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service.
+The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service. It will take a few minutes for the deployment to complete. You can open your Cloud Console to the Cloud Build service to watch the build complete.
 
+## Agent 1: ADK Web
 
-## Test
+To deploy the first agent, change directories to the `2_agents/adk_web_agent` folder. From repository root:
+```bash
+cd 2_agents/adk_web_agent/
+```
 
-
-Once the MCP server is deployed and local dependencies are installed, you can proceed to use the sample agents. See the `2_agents/` directory for more information.
