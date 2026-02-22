@@ -1,11 +1,11 @@
 # Gemini Enterprise ADK MCP Auth
 
-This repository provides a sample implementation of a Model Context Protocol (MCP) server hosted on Cloud Run as well as two ADK agents that can perform end user authentication to perform actions on behalf of an end user.
+This repository provides a sample implementation of a Model Context Protocol (MCP) server hosted on Cloud Run as well as two ADK agents that use authentication to perform actions on behalf of an end user. You will explore the steps involved locally using `adk web` as well as when deploying to Gemini Enterprise.
 
 ## Project Structure
 
 - **`1_cloud_run/`**: Contains the source code and deployment scripts for a FastAPI-based MCP server designed to be deployed on Google Cloud Run.
-- **`2_agents/`**: Contains sample agent definitions for use with the MCP server.
+- **`2_agents/`**: Contains sample agent definitions for use with the MCP server that perform end user authentication.
 
 ## Getting Started
 
