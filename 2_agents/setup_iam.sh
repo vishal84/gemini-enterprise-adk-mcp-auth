@@ -43,13 +43,13 @@ echo "✅ Roles granted successfully."
 
  PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
  
- # The service identity email format is predictable.
+ # The service acount email format is predictable.
 SERVICE_IDENTITY_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-aiplatform-re.iam.gserviceaccount.com"
-echo "🤖 Default Agent Engine service account email: ${SERVICE_IDENTITY_EMAIL}"
+echo "🤖 AI Platform Reasoning Engine Service Agent email: ${SERVICE_IDENTITY_EMAIL}"
 echo "✅ Roles granted successfully."
 
 # Prompt for user's email
-read -rp "Enter your email address to grant Service Account Token Creator role: " USER_EMAIL
+read -rp "Enter your email address to grant Service Account Token Creator role for ${SERVICE_IDENTITY_EMAIL}: " USER_EMAIL
 
 if [[ -n "$USER_EMAIL" ]]; then
     echo "🤖 Granting Service Account Token Creator role to ${USER_EMAIL}..."
@@ -57,7 +57,7 @@ if [[ -n "$USER_EMAIL" ]]; then
         --member="user:${USER_EMAIL}" \
         --role="roles/iam.serviceAccountTokenCreator" \
         --project="${PROJECT_ID}" > /dev/null
-    echo "✅ ${USER_EMAIL} can now mint tokens for ${SERVICE_IDENTITY_EMAIL}."
+    echo "✅ ${USER_EMAIL} can now impersonate the service account ${SERVICE_IDENTITY_EMAIL}."
 else
     echo "⚠️ No email address provided. Skipping token creator role."
 fi
