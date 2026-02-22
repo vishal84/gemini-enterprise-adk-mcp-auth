@@ -1,6 +1,6 @@
 # Gemini Enterprise ADK MCP Auth
 
-This repository provides a sample implementation of a Multi-Client Proxy (MCP) server for authenticating to Gemini Enterprise, along with agent definitions.
+This repository provides a sample implementation of a Model Context Protocol (MCP) server for authenticating to Gemini Enterprise, along with agent definitions.
 
 ## Project Structure
 
