@@ -39,6 +39,7 @@ gcloud services enable \
     run.googleapis.com \
     artifactregistry.googleapis.com \
     cloudbuild.googleapis.com \
+    aiplatform.googleapis.com \
     --project="${PROJECT_ID}"
 
 echo "🔐 Granting necessary IAM roles for deployment..."

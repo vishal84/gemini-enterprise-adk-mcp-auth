@@ -98,10 +98,27 @@ Once you have authenticated to your GCP project, you can deploy the MCP server t
     ./deploy.sh
     ```
 
-The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service.
+The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service. It will take a few minutes for the deployment to complete. You can open your Cloud Console to the Cloud Build service to watch the build complete.
 
+## Agent 1: ADK Web
 
-## Test
+To deploy the first agent, change directories to the `2_agents/` folder. From repository root:
+```bash
+cd 2_agents/
+```
 
+### 1. Create Required Service Accounts and Assign Permissions
 
-Once the MCP server is deployed and local dependencies are installed, you can proceed to use the sample agents. See the `2_agents/` directory for more information.
+Because the ADK agent in these examples require the ability to interact with the MCP server hosted on Cloud Run, you will need to grant the default service account Agent Engine uses with the required roles needed to interact with the service. It is not recommended to use a default service account for production agent workloads. Instead, consider creating agent specific service accounts or using agent identity to apply the prinicples of least privilege to the agent being deployed.
+
+1. In the `2_agents/` folder, run the `setup_iam.sh` script.
+
+```bash
+chmod +x setup_iam.sh
+./setup_iam.sh
+```
+
+Once completed you can proceed to the next step.
+
+2. 
+
