@@ -109,7 +109,9 @@ cd 2_agents/
 
 ### 1. Create Required Service Accounts and Assign Permissions
 
-Because the ADK agent in these examples require the ability to interact with the MCP server hosted on Cloud Run, you will need to grant the default service account Agent Engine uses with the required roles needed to interact with the service. It is not recommended to use a default service account for production agent workloads. Instead, consider creating agent specific service accounts or using agent identity to apply the prinicples of least privilege to the agent being deployed.
+Because the ADK agent in these examples require the ability to interact with the MCP server hosted on Cloud Run, you will create a service account that has permissions to call the MCP server hosted on Cloud Run and give your user permissions to impersonate it. 
+
+It is not recommended to use the default service account for agent workloads in production. Instead, consider creating agent specific service accounts or using agent identity to apply the prinicple of least privilege to the agent being deployed.
 
 1. In the `2_agents/` folder, run the `setup_iam.sh` script.
 
@@ -118,7 +120,26 @@ chmod +x setup_iam.sh
 ./setup_iam.sh
 ```
 
-Once completed you can proceed to the next step.
+Once the script completes successfully proceed to the next step.
 
-2. 
+### 2. Run the ADK Web Agent
+
+Now you will run the agent locally using `adk web`:
+
+1.  Navigate to the `adk_web_agent` directory:
+    ```bash
+    cd adk_web_agent
+    ```
+
+2.  Install the dependencies using `uv`:
+    ```bash
+    uv sync
+    ```
+
+3.  Run the agent using `uv`:
+    ```bash
+    uv run adk web --no-reload
+    ```
+
+### 3. Prompt the agent using `adk web`
 

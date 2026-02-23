@@ -67,7 +67,7 @@ auth_credential = AuthCredential(
 
 def impersonate_service_account(target_url: str) -> str:
     """
-    Fetches an ID token for an end user impersonating a service account.
+    Impersonates a service account for the current user running adk web from the command line.
     
     Args:
         target_url: The URL of the Cloud Run service.
@@ -90,7 +90,7 @@ def impersonate_service_account(target_url: str) -> str:
         "openid"
     ]
 
-    logger.info("Loading source credentials from environment (ADC)...")
+    logger.info("Loading application default credentials")
     source_credentials, _ = google.auth.default()
     audience = target_url.split('/mcp')[0]
     
