@@ -144,7 +144,7 @@ def mcp_header_provider(context) -> dict[str, str]:
 
     return {
         "Authorization": f"Bearer {id_token}",
-        "Content-Type": "text/event-stream",
+        "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream",
     }
 
