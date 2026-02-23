@@ -16,6 +16,9 @@ RUN uv sync --no-dev
 # Copy the content of the local src directory to the working directory
 COPY src/ .
 
+# Allow statements and log messages to immediately appear in the logs
+ENV PYTHONUNBUFFERED=1
+
 # Set PORT environment variable (Cloud Run will override this)
 ENV PORT=8080
 
