@@ -5,7 +5,7 @@ description = "An example Fast MCP server for deployment on Cloud Run"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastmcp",
+    "fastmcp>=2.13.1",
     "google-adk>=1.23.0",
     "python-dotenv>=1.0.0",
 ]

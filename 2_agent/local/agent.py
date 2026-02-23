@@ -2,7 +2,6 @@ import os
 import logging
 from pathlib import Path
 from . import helper
-import vertexai
 
 import google.auth
 import google.auth.transport.requests
@@ -35,11 +34,6 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
 SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL")
 
-GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
-GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
-
-vertexai.init(project=GOOGLE_CLOUD_PROJECT, location=GOOGLE_CLOUD_LOCATION)
-
 auth_scheme = OAuth2(
     flows=OAuthFlows(
         authorizationCode=OAuthFlowAuthorizationCode(
@@ -65,15 +59,18 @@ auth_credential = AuthCredential(
     ),
 )
 
-def impersonate_service_account(target_url: str) -> str:
+def get_cloud_run_token(target_url: str) -> str:
     """
-    Impersonates a service account for the current user running adk web from the command line.
+    Fetches an ID token for authenticating to a Cloud Run service.
+    
+    This function uses Application Default Credentials (ADC) to obtain an identity token
+    that can be used to authenticate requests to Cloud Run services that require authentication.
     
     Args:
-        target_url: The URL of the Cloud Run service.
+        target_url: The URL of the Cloud Run service to authenticate to.
         
     Returns:
-        str: The ID token that can be used in an Authorization header to call Cloud Run after created.
+        str: The ID token that can be used in the Authorization header.
         
     Raises:
         Exception: If unable to fetch the ID token (e.g., authentication failure).
@@ -90,9 +87,15 @@ def impersonate_service_account(target_url: str) -> str:
         "openid"
     ]
 
-    logger.info("Loading application default credentials")
+    # source_credentials = (
+    #     service_account.Credentials.from_service_account_file(
+    #         GOOGLE_APPLICATION_CREDENTIALS,
+    #         scopes=target_scopes
+    #     )
+    # )
+    logger.info("Loading source credentials from environment (ADC)...")
     source_credentials, _ = google.auth.default()
-    audience = target_url.split('/mcp')[0]
+    audience = target_url.split('/sse')[0]
     
     logger.info(f"Source Credentials: {helper.context_to_json(source_credentials)}")
 
@@ -109,6 +112,7 @@ def impersonate_service_account(target_url: str) -> str:
     )
 
     try:
+        # id_token = google.oauth2.id_token.fetch_id_token(auth_req, audience)
         jwt_token.refresh(auth_req)
         id_token = jwt_token.token
 
@@ -118,7 +122,7 @@ def impersonate_service_account(target_url: str) -> str:
             raise ValueError("Failed to fetch ID token: received None")
         return id_token
     except Exception as e:
-        logger.error(f"Error fetching Cloud Run ID token for {target_url}: {e}", exc_info=True)
+        print(f"Error fetching Cloud Run ID token for {target_url}: {e}")
         raise
 
 def mcp_header_provider(context) -> dict[str, str]:
@@ -134,9 +138,9 @@ def mcp_header_provider(context) -> dict[str, str]:
     Raises:
         Exception: If unable to get Cloud Run token.
     """
-    id_token = impersonate_service_account(MCP_SERVER_URL)
+    id_token = get_cloud_run_token(MCP_SERVER_URL)
     logger.info(f"Token: \n{id_token}")
-    # logger.info(f"Context: \n{helper.context_to_json(context)}")
+    logger.info(f"Context: \n{helper.context_to_json(context)}")
 
     return {
         "Authorization": f"Bearer {id_token}",

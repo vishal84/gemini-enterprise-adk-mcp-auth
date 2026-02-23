@@ -38,6 +38,7 @@ echo "🔧 Enabling required Google Cloud services (this may take a few minutes)
 gcloud services enable \
     run.googleapis.com \
     artifactregistry.googleapis.com \
+    telemetry.googleapis.com \
     cloudbuild.googleapis.com \
     aiplatform.googleapis.com \
     --project="${PROJECT_ID}"

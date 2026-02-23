@@ -42,17 +42,28 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
 
 echo "✅ Roles granted successfully."
 
-# Prompt for user's email
-read -rp "Enter your email address to grant Service Account Token Creator role for ${SERVICE_IDENTITY_EMAIL}: " USER_EMAIL
-
-if [[ -n "$USER_EMAIL" ]]; then
-    echo "🤖 Granting Service Account Token Creator role to ${USER_EMAIL}..."
-    gcloud iam service-accounts add-iam-policy-binding "${SERVICE_IDENTITY_EMAIL}" \
-        --member="user:${USER_EMAIL}" \
-        --role="roles/iam.serviceAccountTokenCreator" \
-        --project="${PROJECT_ID}" > /dev/null
-    echo "✅ ${USER_EMAIL} can now impersonate the service account ${SERVICE_IDENTITY_EMAIL}."
+# Create a staging bucket for agent engine deployments
+STAGING_BUCKET="agent-staging-${PROJECT_ID}"
+if ! gcloud storage buckets describe "gs://${STAGING_BUCKET}" &> /dev/null; then
+    echo "🤖 Creating staging bucket gs://${STAGING_BUCKET}..."
+    gcloud storage buckets create "gs://${STAGING_BUCKET}" --project="${PROJECT_ID}" --location=US-CENTRAL1
 else
-    echo "⚠️ No email address provided. Skipping token creator role."
+    echo "✅ Staging bucket gs://${STAGING_BUCKET} already exists."
 fi
+
+echo "STAGING_BUCKET=${STAGING_BUCKET}"
+
+# # Prompt for user's email
+# read -rp "Enter your email address to grant Service Account Token Creator role for ${SERVICE_IDENTITY_EMAIL}: " USER_EMAIL
+
+# if [[ -n "$USER_EMAIL" ]]; then
+#     echo "🤖 Granting Service Account Token Creator role to ${USER_EMAIL}..."
+#     gcloud iam service-accounts add-iam-policy-binding "${SERVICE_IDENTITY_EMAIL}" \
+#         --member="user:${USER_EMAIL}" \
+#         --role="roles/iam.serviceAccountTokenCreator" \
+#         --project="${PROJECT_ID}" > /dev/null
+#     echo "✅ ${USER_EMAIL} can now impersonate the service account ${SERVICE_IDENTITY_EMAIL}."
+# else
+#     echo "⚠️ No email address provided. Skipping token creator role."
+# fi
 

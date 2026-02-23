@@ -1,7 +1,7 @@
 [project]
-name = "adk-web-agent"
+name = "code-snippet-agent"
 version = "0.1.0"
-description = "An ADK agent requiring auth for MCP usage within the adk web app."
+description = "An ADK agent requiring authentication for access to MCP tools deployed within Gemini Enterprise."
 requires-python = ">=3.12"
 dependencies = [
     "google-adk>=1.20.0",
@@ -13,7 +13,7 @@ dependencies = [
 package = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["agent"]
+packages = ["agent", "local"]
 
 [build-system]
 requires = ["hatchling"]
