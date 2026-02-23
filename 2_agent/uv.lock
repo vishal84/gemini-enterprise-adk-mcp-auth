@@ -346,7 +346,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "google-adk", specifier = ">=1.20.0" },
-    { name = "google-auth", specifier = ">=2.0.0" },
+    { name = "google-auth", specifier = ">=2.30.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
 ]
 

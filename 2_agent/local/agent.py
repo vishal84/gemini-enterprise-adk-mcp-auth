@@ -79,22 +79,17 @@ def get_cloud_run_token(target_url: str) -> str:
         Requires the caller to have the run.invoker role on the Cloud Run service.
     """
     auth_req = google.auth.transport.requests.Request()
-
+    
     target_scopes = [
         "https://www.googleapis.com/auth/cloud-platform",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "openid"
     ]
+    # "https://www.googleapis.com/auth/userinfo.email",
+    # "https://www.googleapis.com/auth/userinfo.profile",
+    # "openid"
 
-    # source_credentials = (
-    #     service_account.Credentials.from_service_account_file(
-    #         GOOGLE_APPLICATION_CREDENTIALS,
-    #         scopes=target_scopes
-    #     )
-    # )
     logger.info("Loading source credentials from environment (ADC)...")
     source_credentials, _ = google.auth.default()
+
     audience = target_url.split('/sse')[0]
     
     logger.info(f"Source Credentials: {helper.context_to_json(source_credentials)}")
@@ -113,9 +108,10 @@ def get_cloud_run_token(target_url: str) -> str:
 
     try:
         # id_token = google.oauth2.id_token.fetch_id_token(auth_req, audience)
+        logger.info(f"Fetched ID token using google.oauth2.id_token.fetch_id_token: {id_token}")
         jwt_token.refresh(auth_req)
-        id_token = jwt_token.token
-
+        id_token = jwt_token.id_token
+        
         logger.info(f"ID token: {id_token}")
 
         if not id_token:

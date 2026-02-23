@@ -79,12 +79,9 @@ def get_cloud_run_token(target_url: str) -> str:
         print(f"Error fetching Cloud Run ID token for {target_url}: {e}")
         raise
 
-def mcp_header_provider(context) -> dict[str, str]:
+def mcp_header_provider() -> dict[str, str]:
     """
     Provides authentication headers for MCP server requests.
-    
-    Args:
-        context: The context object from the MCP toolset.
         
     Returns:
         dict: Headers including the Bearer token for authentication.
