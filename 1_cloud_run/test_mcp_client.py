@@ -4,9 +4,8 @@ from fastmcp import Client
 
 async def test_server():
     # Test the MCP server using streamable-http transport.
-    # Use "/sse" endpoint if using sse transport.
     # run: gcloud run services proxy code-snippet-mcp-server --region=us-central1
-    async with Client("http://localhost:8080/sse") as client:
+    async with Client("http://localhost:8080/mcp") as client:
        
         # 1. List available tools
         tools = await client.list_tools()
