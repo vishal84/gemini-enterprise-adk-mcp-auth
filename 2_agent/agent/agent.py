@@ -1,22 +1,16 @@
-import os
 import logging
+from . import patch_adk
 from pathlib import Path
 
 import google.auth
 import google.auth.transport.requests
-from google.auth.exceptions import DefaultCredentialsError
 import google.oauth2.id_token
 
-from fastapi.openapi.models import OAuth2
-from fastapi.openapi.models import OAuthFlowAuthorizationCode
-from fastapi.openapi.models import OAuthFlows
-
 from google.adk.agents import LlmAgent
-from google.adk.auth.auth_credential import AuthCredential
-from google.adk.auth.auth_credential import AuthCredentialTypes
-from google.adk.auth.auth_credential import OAuth2Auth
+
 from google.adk.auth.auth_credential import AuthCredential, AuthCredentialTypes
 from google.adk.auth.auth_credential import HttpAuth, HttpCredentials
+
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 
@@ -34,15 +28,16 @@ logger = logging.getLogger()
 CLIENT_ID = config.get("CLIENT_ID")
 CLIENT_SECRET = config.get("CLIENT_SECRET")
 MCP_SERVER_URL = config.get("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
+AUTH_ID = config.get("AUTH_ID", "AUTH ID NOT SET")
 
 class GeminiEnterpriseHttpAuth(HttpAuth):
     scheme: str = "ge_auth_resource"
     credentials: HttpCredentials = HttpCredentials()
-    ge_authentication_resource_auth_id: str
+    ge_auth_id: str
 
 auth_credential = AuthCredential(
     auth_type=AuthCredentialTypes.HTTP,
-    http=GeminiEnterpriseHttpAuth(ge_authentication_resource_auth_id="code-snippet-auth")
+    http=GeminiEnterpriseHttpAuth(ge_auth_id=AUTH_ID)
 )
 auth_scheme = HTTPBearer(bearerFormat='JWT')
 
@@ -79,7 +74,7 @@ def get_cloud_run_token(target_url: str) -> str:
         print(f"Error fetching Cloud Run ID token for {target_url}: {e}")
         raise
 
-def mcp_header_provider() -> dict[str, str]:
+def mcp_header_provider(context) -> dict[str, str]:
     """
     Provides authentication headers for MCP server requests.
         

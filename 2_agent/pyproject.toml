@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "An ADK agent requiring authentication for access to MCP tools deployed within Gemini Enterprise."
 requires-python = ">=3.12"
 dependencies = [
+    "fastmcp==2.13.1",
     "google-adk>=1.20.0",
     "python-dotenv>=1.0.0",
     "google-auth>=2.30.0",
