@@ -110,10 +110,11 @@ def get_cloud_run_token(target_url: str) -> str:
     )
 
     try:
-        # id_token = google.oauth2.id_token.fetch_id_token(auth_req, audience)
         jwt_token.refresh(auth_req)
         id_token = jwt_token.token
 
+        # Use a tool like jwt.io to decode the token and verify 
+        # your user is impersonating the service account
         logger.info(f"ID token: {id_token}")
 
         if not id_token:
