@@ -1,11 +1,20 @@
 import asyncio
-
 from fastmcp import Client
+from fastmcp.client.transports import StreamableHttpTransport
+from fastmcp.utilities.logging import configure_logging
+
+# Configure FastMCP to output DEBUG level logs
+configure_logging(level="DEBUG")
 
 async def test_server():
+
+    transport = StreamableHttpTransport(
+        "http://localhost:8080/mcp", 
+    )
+
     # Test the MCP server using streamable-http transport.
     # run: gcloud run services proxy code-snippet-mcp-server --region=us-central1
-    async with Client("http://localhost:8080/mcp") as client:
+    async with Client(transport) as client:
        
         # 1. List available tools
         tools = await client.list_tools()
