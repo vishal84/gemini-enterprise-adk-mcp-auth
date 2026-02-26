@@ -2,6 +2,8 @@ import os
 import logging
 from pathlib import Path
 
+from httplib2 import Credentials
+
 import google.auth
 import google.auth.transport.requests
 from google.auth import impersonated_credentials
@@ -13,10 +15,9 @@ from fastapi.openapi.models import OAuthFlows
 from google.adk.agents import LlmAgent
 from google.adk.agents.readonly_context import ReadonlyContext
 
-from google.adk.auth.auth_credential import AuthCredential
-from google.adk.auth.auth_credential import AuthCredentialTypes
-from google.adk.auth.auth_credential import OAuth2Auth
+from google.adk.auth import AuthConfig, AuthCredential, AuthCredentialTypes, OAuth2Auth
 
+from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 
@@ -38,6 +39,7 @@ SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL")
 # by this flow will be used to provide the MCP server headers it can use to make authorization decisions based 
 # on the authenticated user's identity and permissions. The scopes defined here specify the level of access the 
 # token will have, including access to the user's email, profile, and cloud platform resources.
+
 auth_scheme = OAuth2(
     flows=OAuthFlows(
         authorizationCode=OAuthFlowAuthorizationCode(
@@ -62,6 +64,33 @@ auth_credential = AuthCredential(
         redirect_uri="http://127.0.0.1:8000/dev-ui/",
     ),
 )
+
+auth_config = AuthConfig(
+    auth_scheme=auth_scheme,
+    auth_credential=auth_credential
+)
+
+def get_user_credentials(callback_context: CallbackContext, ):
+    auth_response = callback_context.get_auth_response(auth_config=auth_config)
+    
+    if auth_response:
+      logging.info("Received new auth response. Creating credentials.")
+      # The ADK has already exchanged the auth code for tokens.
+      # We create a google.oauth2.credentials.Credentials object from the
+      # response provided by the ADK.
+      creds = Credentials(
+          token=auth_response.oauth2.access_token,
+          refresh_token=auth_response.oauth2.refresh_token,
+          token_uri=auth_scheme.flows.authorizationCode.tokenUrl,
+          client_id=CLIENT_ID,
+          client_secret=CLIENT_SECRET,
+          scopes=list(auth_scheme.flows.authorizationCode.scopes.keys()),
+      )
+
+      logger.info(f"Created credentials from auth response: {creds}")
+      # Cache the new credentials in the session state for future use.
+      callback_context.session.state["access_token"] = creds.to_json()
+
 
 # This function retrieves an ID token for authenticating to the Cloud Run service using impersonated credentials.
 # It first loads the source credentials from the environment (which could be user credentials or service account 
@@ -123,17 +152,23 @@ def get_access_token(readonly_context: ReadonlyContext) -> str | None:
         for key, value in session_state.items():
             logger.info(f"Inspecting session state \n key: {key}, \n value: {value}, \n type: {type(value)}")
 
+            # Check for AuthCredential object with OpenID Connect [:10]
+            if isinstance(value, AuthCredential) and value.auth_type == AuthCredentialTypes.OPEN_ID_CONNECT and value.oauth2:
+                if value.oauth2.access_token:
+                    logger.info(f"\n\nFound access_token in AuthCredential object in session state key: \n   * key: {key} \n   * token: {value.oauth2.access_token}\n\n")
+                    return value.oauth2.access_token
+
             # Direct string token check
-            if isinstance(value, str) and value.startswith("eyJ"):
-                # Log only the beginning of the token for security - change back to value[:10]
-                logger.info(f"Found id_token in session state key: {key}, token: {value}...") 
+            if isinstance(value, str) and (value.startswith("eyJ") or value.startswith("ya29.")):
+                # Log only the beginning of the token for security
+                logger.info(f"Found token in session state key: {key}, token: {value[:10]}...") 
                 return value
             
             # Dictionary check for nested tokens (e.g., in case of a more complex session structure)
             if isinstance(value, dict):
                 if "access_token" in value:
                     token = value["access_token"]
-                    if isinstance(token, str) and token.startswith("eyJ"):
+                    if isinstance(token, str) and (token.startswith("eyJ") or token.startswith("ya29.")):
                         logger.info(f"Found nested token in key: {key}, token: {token[:10]}...")
                         return token
                 else:
@@ -141,7 +176,7 @@ def get_access_token(readonly_context: ReadonlyContext) -> str | None:
                     logger.info(f"Inspecting dict key '{key}': {list(value.keys())}")
 
     logger.info("No token found in session state.")
-    return
+    return None
 
 def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
     token = get_access_token(readonly_context)
@@ -152,7 +187,7 @@ def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
     
     return {
         "Authorization": f"Bearer {token.strip()}",
-        "Accept": "text/event-stream",
+        "Accept": "application/json, text/event-stream",
         "Cache-Control": "no-cache"
     }
 
@@ -168,8 +203,8 @@ cloud_run_mcp = McpToolset(
         }
     ),
     header_provider=mcp_header_provider,
-    auth_scheme=auth_scheme,
-    auth_credential=auth_credential,
+    # auth_scheme=auth_scheme,
+    # auth_credential=auth_credential,
     errlog=mcp_logger
 )
 
@@ -182,4 +217,5 @@ root_agent = LlmAgent(
     - Always use the MCP tool to get code snippets, never make up code snippets on your own.
     """,
     tools=[cloud_run_mcp],
+    before_tool_callback=[get_user_credentials]
 )
