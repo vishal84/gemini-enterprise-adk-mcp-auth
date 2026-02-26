@@ -133,7 +133,6 @@ def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
         "Cache-Control": "no-cache"
     }
 
-
 def mcp_logger(log_statement: str):
     logger.info(f"[McpToolset] {log_statement}", exc_info=True)
 
