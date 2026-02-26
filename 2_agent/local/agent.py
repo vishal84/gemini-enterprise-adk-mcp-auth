@@ -82,7 +82,9 @@ def get_cloud_run_token(target_url: str) -> str:
         "openid"
     ]
 
-    logger.info("Loading source credentials from environment (ADC)...")
+    # Load the application default credentials from the environment. 
+    # This will be the end user credentials (if running locally and 
+    # authenticated with gcloud)
     source_credentials, _ = google.auth.default()
     
     target_credentials = impersonated_credentials.Credentials(
