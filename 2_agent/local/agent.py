@@ -205,7 +205,7 @@ cloud_run_mcp = McpToolset(
             "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
         }
     ),
-    header_provider=mcp_header_provider,
+    # header_provider=mcp_header_provider,
     # auth_scheme=auth_scheme,
     # auth_credential=auth_credential,
     errlog=mcp_logger
@@ -219,6 +219,5 @@ root_agent = LlmAgent(
     - Provide the type as an input required to ask for a code snippet i.e. sql, python, javascript, json, or go.
     - Always use the MCP tool to get code snippets, never make up code snippets on your own.
     """,
-    tools=[cloud_run_mcp],
-    before_tool_callback=[get_user_credentials]
+    tools=[cloud_run_mcp]
 )
