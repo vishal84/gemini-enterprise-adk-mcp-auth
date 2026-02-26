@@ -216,7 +216,7 @@ if __name__ == "__main__":
     logger.info(f"🚀 MCP server started on port {port}")
     asyncio.run(
         mcp.run_async(
-            transport="http",
+            transport="streamable-http",
             host="0.0.0.0",
             port=port,
         )
