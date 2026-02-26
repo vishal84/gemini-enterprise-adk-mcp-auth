@@ -116,12 +116,15 @@ def get_cloud_run_token(target_url: str) -> str:
     # authenticated with gcloud)
     source_credentials, _ = google.auth.default()
     
+    # impersonate the service account using the role grant serviceAccountTokenCreator
     target_credentials = impersonated_credentials.Credentials(
         source_credentials=source_credentials,
         target_principal=SERVICE_ACCOUNT_EMAIL,
         target_scopes = target_scopes,
     )
 
+    # get an ID token for the impersonated credentials to send to Cloud Run protected by IAM authentication.
+    # The audience should be the URL of the Cloud Run service.
     jwt_token = impersonated_credentials.IDTokenCredentials(
         target_credentials=target_credentials,
         target_audience=audience,
