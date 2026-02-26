@@ -23,4 +23,4 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
 
 # Command to run the FastMCP application
-CMD exec uv run python main.py
+CMD exec uv run python auth.py
