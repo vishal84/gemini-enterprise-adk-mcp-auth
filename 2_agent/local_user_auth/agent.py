@@ -139,7 +139,7 @@ def mcp_logger(log_statement: str):
 
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
-        url="http://0.0.0.0:8080/mcp",
+        url=MCP_SERVER_AUTH_URL,
     ),
     header_provider=mcp_header_provider,
     auth_scheme=auth_scheme,
