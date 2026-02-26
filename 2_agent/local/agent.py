@@ -34,6 +34,10 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
 SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL")
 
+# Define the OAuth2 authentication scheme for OpenID Connect with Google as the provider. The token returned
+# by this flow will be used to provide the MCP server headers it can use to make authorization decisions based 
+# on the authenticated user's identity and permissions. The scopes defined here specify the level of access the 
+# token will have, including access to the user's email, profile, and cloud platform resources.
 auth_scheme = OAuth2(
     flows=OAuthFlows(
         authorizationCode=OAuthFlowAuthorizationCode(
@@ -59,6 +63,11 @@ auth_credential = AuthCredential(
     ),
 )
 
+# This function retrieves an ID token for authenticating to the Cloud Run service using impersonated credentials.
+# It first loads the source credentials from the environment (which could be user credentials or service account 
+# credentials), then creates impersonated credentials for the target service account, and finally generates an 
+# ID token with the appropriate audience for the Cloud Run service. The ID token is used in the Authorization 
+# header when making requests to the MCP server running on Cloud Run (protected by IAM authentication).
 def get_cloud_run_token(target_url: str) -> str:
 
     audience = target_url.split('/mcp')[0]
@@ -75,22 +84,18 @@ def get_cloud_run_token(target_url: str) -> str:
 
     logger.info("Loading source credentials from environment (ADC)...")
     source_credentials, _ = google.auth.default()
-    logger.info(f"Source Credentials: {source_credentials}")
     
     target_credentials = impersonated_credentials.Credentials(
         source_credentials=source_credentials,
         target_principal=SERVICE_ACCOUNT_EMAIL,
         target_scopes = target_scopes,
     )
-    logger.info(f"Target Credentials: {target_credentials}")
-
 
     jwt_token = impersonated_credentials.IDTokenCredentials(
         target_credentials=target_credentials,
         target_audience=audience,
         include_email=True,
     )
-    logger.info(f"JWT Token: {jwt_token}")
 
     try:
         jwt_token.refresh(auth_req)
