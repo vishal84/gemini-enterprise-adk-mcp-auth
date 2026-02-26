@@ -111,19 +111,51 @@ def get_cloud_run_token(target_url: str) -> str:
             raise ValueError("Failed to fetch ID token: received None")
         return id_token
     except Exception as e:
-        print(f"Error fetching Cloud Run ID token for {target_url}: {e}")
+        logger.info(f"Error fetching Cloud Run ID token for {target_url}: {e}")
         raise
 
-def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
-    
-    id_token = get_cloud_run_token(MCP_SERVER_URL)
+def get_access_token(readonly_context: ReadonlyContext) -> str | None:
 
-    # Construct headers for MCP requests, including the ID token for authentication
+    if hasattr(readonly_context, "session") and hasattr(readonly_context.session, "state"):
+        session_state = dict(readonly_context.session.state)
+        logger.info(f"session state keys: {list(session_state.keys())}")
+        
+        for key, value in session_state.items():
+            logger.info(f"Inspecting session state \n key: {key}, \n value: {value}, \n type: {type(value)}")
+
+            # Direct string token check
+            if isinstance(value, str) and value.startswith("eyJ"):
+                # Log only the beginning of the token for security - change back to value[:10]
+                logger.info(f"Found id_token in session state key: {key}, token: {value}...") 
+                return value
+            
+            # Dictionary check for nested tokens (e.g., in case of a more complex session structure)
+            if isinstance(value, dict):
+                if "access_token" in value:
+                    token = value["access_token"]
+                    if isinstance(token, str) and token.startswith("eyJ"):
+                        logger.info(f"Found nested token in key: {key}, token: {token[:10]}...")
+                        return token
+                else:
+                    # print dictionary keys
+                    logger.info(f"Inspecting dict key '{key}': {list(value.keys())}")
+
+    logger.info("No token found in session state.")
+    return
+
+def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
+    token = get_access_token(readonly_context)
+
+    if not token:
+        logger.info("No id_token or access_token found!")
+        return {}
+    
     return {
-        "Authorization": f"Bearer {id_token}",
-        "Content-Type": "application/json",
-        "Accept": "application/json, text/event-stream",
+        "Authorization": f"Bearer {token.strip()}",
+        "Accept": "text/event-stream",
+        "Cache-Control": "no-cache"
     }
+
 
 def mcp_logger(log_statement: str):
     logger.info(f"[McpToolset] {log_statement}", exc_info=True)
@@ -135,9 +167,9 @@ cloud_run_mcp = McpToolset(
             "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
         }
     ),
-    # header_provider=mcp_header_provider,
-    # auth_scheme=auth_scheme,
-    # auth_credential=auth_credential,
+    header_provider=mcp_header_provider,
+    auth_scheme=auth_scheme,
+    auth_credential=auth_credential,
     errlog=mcp_logger
 )
 
