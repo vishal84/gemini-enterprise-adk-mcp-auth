@@ -1,7 +1,6 @@
 import os
 import logging
 from pathlib import Path
-from . import helper
 
 import google.auth
 import google.auth.transport.requests
@@ -12,9 +11,12 @@ from fastapi.openapi.models import OAuthFlowAuthorizationCode
 from fastapi.openapi.models import OAuthFlows
 
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
+
 from google.adk.auth.auth_credential import AuthCredential
 from google.adk.auth.auth_credential import AuthCredentialTypes
 from google.adk.auth.auth_credential import OAuth2Auth
+
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 
@@ -49,7 +51,7 @@ auth_scheme = OAuth2(
 )
 
 auth_credential = AuthCredential(
-    auth_type=AuthCredentialTypes.OAUTH2,
+    auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
     oauth2=OAuth2Auth(
         client_id=CLIENT_ID, 
         client_secret=CLIENT_SECRET,
@@ -58,24 +60,10 @@ auth_credential = AuthCredential(
 )
 
 def get_cloud_run_token(target_url: str) -> str:
-    """
-    Fetches an ID token for authenticating to a Cloud Run service.
-    
-    This function uses Application Default Credentials (ADC) to obtain an identity token
-    that can be used to authenticate requests to Cloud Run services that require authentication.
-    
-    Args:
-        target_url: The URL of the Cloud Run service to authenticate to.
-        
-    Returns:
-        str: The ID token that can be used in the Authorization header.
-        
-    Raises:
-        Exception: If unable to fetch the ID token (e.g., authentication failure).
-        
-    Note:
-        Requires the caller to have the run.invoker role on the Cloud Run service.
-    """
+
+    audience = target_url.split('/mcp')[0]
+    logger.info(f"Audience: {audience}")
+
     auth_req = google.auth.transport.requests.Request()
 
     target_scopes = [
@@ -85,29 +73,24 @@ def get_cloud_run_token(target_url: str) -> str:
         "openid"
     ]
 
-    # source_credentials = (
-    #     service_account.Credentials.from_service_account_file(
-    #         GOOGLE_APPLICATION_CREDENTIALS,
-    #         scopes=target_scopes
-    #     )
-    # )
     logger.info("Loading source credentials from environment (ADC)...")
     source_credentials, _ = google.auth.default()
-    audience = target_url.split('/mcp')[0]
+    logger.info(f"Source Credentials: {source_credentials}")
     
-    logger.info(f"Source Credentials: {helper.context_to_json(source_credentials)}")
-
     target_credentials = impersonated_credentials.Credentials(
         source_credentials=source_credentials,
         target_principal=SERVICE_ACCOUNT_EMAIL,
         target_scopes = target_scopes,
     )
+    logger.info(f"Target Credentials: {target_credentials}")
+
 
     jwt_token = impersonated_credentials.IDTokenCredentials(
         target_credentials=target_credentials,
         target_audience=audience,
         include_email=True,
     )
+    logger.info(f"JWT Token: {jwt_token}")
 
     try:
         jwt_token.refresh(auth_req)
@@ -124,36 +107,31 @@ def get_cloud_run_token(target_url: str) -> str:
         print(f"Error fetching Cloud Run ID token for {target_url}: {e}")
         raise
 
-def mcp_header_provider(context) -> dict[str, str]:
-    """
-    Provides authentication headers for MCP server requests.
+def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
     
-    Args:
-        context: The context object from the MCP toolset.
-        
-    Returns:
-        dict: Headers including the Bearer token for authentication.
-        
-    Raises:
-        Exception: If unable to get Cloud Run token.
-    """
     id_token = get_cloud_run_token(MCP_SERVER_URL)
-    logger.info(f"Token: \n{id_token}")
-    logger.info(f"Context: \n{helper.context_to_json(context)}")
 
+    # Construct headers for MCP requests, including the ID token for authentication
     return {
         "Authorization": f"Bearer {id_token}",
         "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream",
     }
 
+def mcp_logger(log_statement: str):
+    logger.info(f"[McpToolset] {log_statement}", exc_info=True)
+
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
-        url=MCP_SERVER_URL
+        url=MCP_SERVER_URL,
+        headers={
+            "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
+        }
     ),
-    header_provider=mcp_header_provider,
-    auth_scheme=auth_scheme,
-    auth_credential=auth_credential
+    # header_provider=mcp_header_provider,
+    # auth_scheme=auth_scheme,
+    # auth_credential=auth_credential,
+    errlog=mcp_logger
 )
 
 root_agent = LlmAgent(
@@ -161,8 +139,7 @@ root_agent = LlmAgent(
     name="code_snippet_agent",
     instruction="""You are a helpful agent that has access to an MCP tool used to retrieve code snippets.
     - If a user asks what you can do, answer that you can provide code snippets from the MCP tool you have access to.
-    - Provide the function name to call to ask for a snippet:
-    - `get_snippet("<type>")` where <type> can be sql, python, javascript, json, or go.
+    - Provide the type as an input required to ask for a code snippet i.e. sql, python, javascript, json, or go.
     - Always use the MCP tool to get code snippets, never make up code snippets on your own.
     """,
     tools=[cloud_run_mcp],
