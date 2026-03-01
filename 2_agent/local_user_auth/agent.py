@@ -3,10 +3,6 @@ import logging
 from pathlib import Path
 from httplib2 import Credentials
 
-import google.auth
-import google.auth.transport.requests
-from google.auth import impersonated_credentials
-
 from fastapi.openapi.models import OAuth2
 from fastapi.openapi.models import OAuthFlowAuthorizationCode
 from fastapi.openapi.models import OAuthFlows
@@ -31,8 +27,7 @@ logger = logging.getLogger()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
-SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL")
+MCP_SERVER_AUTH_URL = os.getenv("MCP_SERVER_AUTH_URL", "MCP SERVER AUTH URL NOT SET")
 
 # Define the OAuth2 authentication scheme for OpenID Connect with Google as the provider. The token returned
 # by this flow will be used to provide the MCP server headers it can use to make authorization decisions based 
@@ -69,81 +64,26 @@ auth_config = AuthConfig(
     auth_credential=auth_credential
 )
 
-def get_user_credentials(callback_context: CallbackContext, ):
-    auth_response = callback_context.get_auth_response(auth_config=auth_config)
+# def get_user_credentials(callback_context: CallbackContext):
+#     auth_response = callback_context.get_auth_response(auth_config=auth_config)
     
-    if auth_response:
-      logging.info("Received new auth response. Creating credentials.")
-      # The ADK has already exchanged the auth code for tokens.
-      # We create a google.oauth2.credentials.Credentials object from the
-      # response provided by the ADK.
-      creds = Credentials(
-          token=auth_response.oauth2.access_token,
-          refresh_token=auth_response.oauth2.refresh_token,
-          token_uri=auth_scheme.flows.authorizationCode.tokenUrl,
-          client_id=CLIENT_ID,
-          client_secret=CLIENT_SECRET,
-          scopes=list(auth_scheme.flows.authorizationCode.scopes.keys()),
-      )
+#     if auth_response:
+#       logging.info("Received new auth response. Creating credentials.")
+#       # The ADK has already exchanged the auth code for tokens.
+#       # We create a google.oauth2.credentials.Credentials object from the
+#       # response provided by the ADK.
+#       creds = Credentials(
+#           token=auth_response.oauth2.access_token,
+#           refresh_token=auth_response.oauth2.refresh_token,
+#           token_uri=auth_scheme.flows.authorizationCode.tokenUrl,
+#           client_id=CLIENT_ID,
+#           client_secret=CLIENT_SECRET,
+#           scopes=list(auth_scheme.flows.authorizationCode.scopes.keys()),
+#       )
 
-      logger.info(f"Created credentials from auth response: {creds}")
-      # Cache the new credentials in the session state for future use.
-      callback_context.session.state["access_token"] = creds.to_json()
-
-
-# This function retrieves an ID token for authenticating to the Cloud Run service using impersonated credentials.
-# It first loads the source credentials from the environment (which could be user credentials or service account 
-# credentials), then creates impersonated credentials for the target service account, and finally generates an 
-# ID token with the appropriate audience for the Cloud Run service. The ID token is used in the Authorization 
-# header when making requests to the MCP server running on Cloud Run (protected by IAM authentication).
-def get_cloud_run_token(target_url: str) -> str:
-
-    audience = target_url.split('/mcp')[0]
-    logger.info(f"Audience: {audience}")
-
-    auth_req = google.auth.transport.requests.Request()
-
-    target_scopes = [
-        "https://www.googleapis.com/auth/cloud-platform",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "openid"
-    ]
-
-    # Load the application default credentials from the environment. 
-    # This will be the end user credentials (if running locally and 
-    # authenticated with gcloud)
-    source_credentials, _ = google.auth.default()
-    
-    # impersonate the service account using the role grant serviceAccountTokenCreator
-    target_credentials = impersonated_credentials.Credentials(
-        source_credentials=source_credentials,
-        target_principal=SERVICE_ACCOUNT_EMAIL,
-        target_scopes = target_scopes,
-    )
-
-    # get an ID token for the impersonated credentials to send to Cloud Run protected by IAM authentication.
-    # The audience should be the URL of the Cloud Run service.
-    jwt_token = impersonated_credentials.IDTokenCredentials(
-        target_credentials=target_credentials,
-        target_audience=audience,
-        include_email=True,
-    )
-
-    try:
-        jwt_token.refresh(auth_req)
-        id_token = jwt_token.token
-
-        # Use a tool like jwt.io to decode the token and verify 
-        # your user is impersonating the service account
-        logger.info(f"ID token: {id_token}")
-
-        if not id_token:
-            raise ValueError("Failed to fetch ID token: received None")
-        return id_token
-    except Exception as e:
-        logger.info(f"Error fetching Cloud Run ID token for {target_url}: {e}")
-        raise
+#       logger.info(f"Created credentials from auth response: {creds}")
+#       # Cache the new credentials in the session state for future use.
+#       callback_context.session.state["access_token"] = creds.to_json()
 
 def get_access_token(readonly_context: ReadonlyContext) -> str | None:
 
@@ -178,7 +118,7 @@ def get_access_token(readonly_context: ReadonlyContext) -> str | None:
                     logger.info(f"Inspecting dict key '{key}': {list(value.keys())}")
 
     logger.info("No token found in session state.")
-    return "None"
+    return None
 
 def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
     token = get_access_token(readonly_context)
@@ -193,30 +133,25 @@ def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
         "Cache-Control": "no-cache"
     }
 
-
 def mcp_logger(log_statement: str):
     logger.info(f"[McpToolset] {log_statement}", exc_info=True)
 
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
-        url=MCP_SERVER_URL,
-        headers={
-            "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
-        }
+        url=MCP_SERVER_AUTH_URL,
     ),
-    # header_provider=mcp_header_provider,
-    # auth_scheme=auth_scheme,
-    # auth_credential=auth_credential,
+    header_provider=mcp_header_provider,
+    auth_scheme=auth_scheme,
+    auth_credential=auth_credential,
     errlog=mcp_logger
 )
 
 root_agent = LlmAgent(
     model="gemini-2.5-pro",
-    name="code_snippet_agent",
-    instruction="""You are a helpful agent that has access to an MCP tool used to retrieve code snippets.
-    - If a user asks what you can do, answer that you can provide code snippets from the MCP tool you have access to.
-    - Provide the type as an input required to ask for a code snippet i.e. sql, python, javascript, json, or go.
-    - Always use the MCP tool to get code snippets, never make up code snippets on your own.
+    name="code_snippet_auth_agent",
+    instruction="""You are a helpful agent that has access to an MCP tool used to retrieve an end users information.
+    - If a user asks what you can do, answer that you can provide information about them that the MCP server has access to such as their name, email, and profile picture.
+    - Always use the MCP tool `get_user_info_from_access_token` to get user information, never make up user information on your own.
     """,
     tools=[cloud_run_mcp]
 )
