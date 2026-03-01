@@ -141,7 +141,7 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 </div>
 
 <div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>Agent:</strong> Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?</code></pre>
+  <strong>Agent:</strong> Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?
 </div>
 
 <div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
@@ -172,6 +172,13 @@ ORDER BY
 </code></pre>
 </div>
 
-## 3. Deploy the ADK agent to Agent Engine and Register with Gemini Enterprise
+## 3. Deploy the ADK agent to Agent Engine
+
+Now that you've tested the ADK agent locally, it can be deployed to Agent Engine. Once deployed to Agent Engine, you will register it with Gemini Enterprise in a later task.
+
+
+
+
+## 4. Register the ADK Agent with Gemini Enterprise
 
 
