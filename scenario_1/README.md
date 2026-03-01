@@ -4,7 +4,7 @@ This scenario elaborates setup and testing of an ADK agent deployed locally usin
 
 To begin, you will deploy the Cloud Run server by building a container of the MCP server found in the `1_cloud_run/` directory.  Once deployed you will follow steps to test the ADK agent locally using `adk web` then deploy it to Agent Engine and register it with Gemini Enterprise.
 
-## Deploy the MCP Server to Cloud Run
+## 1. Deploy the MCP Server to Cloud Run
 
 To deploy the MCP server:
 
@@ -75,5 +75,11 @@ http://127.0.0.1:8080 proxies to https://code-snippet-mcp-server-ofleaf4vuq-uc.a
 uv run python test_mcp_client.py
 ```
 
-Upon execution, you should see calls to the list tools operation of the MCP server and individual tool calls for SQL and json snippets.
+Upon execution, you should see calls to the `list_tools` operation of the MCP server and individual tool calls for SQL and json snippets.
+
+When finished, close the terminal used to run the test script and press `Ctrl+C` in the terminal running the Cloud Run service proxy to stop the proxy.
+
+Now that you've confirmed your MCP server is up and running on Cloud Run you will run an ADK agent locally using `adk web` to consume the MCP server in an ADK agent and consume the tools it makes available. Once tested locally, you will deploy the agent to Agent Engine and register it with Gemini Enterprise to perform the same.
+
+## 2. Run the ADK agent locally
 
