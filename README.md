@@ -1,6 +1,6 @@
 # Gemini Enterprise ADK MCP Auth
 
-This repository provides two sample scenarios on how to deploy ADK agents that consume an MCP server's tools both locally, using `adk web`, and via Agent Engine registered with Gemini Enterprise. Each scenario will guide you through consuming an MCP server using a service account 
+This repository provides two sample scenarios on how to deploy ADK agents that consume an MCP server's tools both locally, using `adk web`, and via Agent Engine registered with Gemini Enterprise. Each scenario will guide you through consuming an MCP server using a service account or end user authentication.
 
 ### Prerequisites
 
