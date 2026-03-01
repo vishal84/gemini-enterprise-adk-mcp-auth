@@ -1,21 +1,12 @@
 import os
 import logging
 from pathlib import Path
-from httplib2 import Credentials
 
 import google.auth
 import google.auth.transport.requests
-from google.auth import impersonated_credentials
-
-from fastapi.openapi.models import OAuth2
-from fastapi.openapi.models import OAuthFlowAuthorizationCode
-from fastapi.openapi.models import OAuthFlows
+import google.oauth2.id_token
 
 from google.adk.agents import LlmAgent
-from google.adk.agents.readonly_context import ReadonlyContext
-from google.adk.agents.callback_context import CallbackContext
-
-from google.adk.auth import AuthConfig, AuthCredential, AuthCredentialTypes, OAuth2Auth
 
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
