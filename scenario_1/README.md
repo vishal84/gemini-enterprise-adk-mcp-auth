@@ -102,7 +102,7 @@ chmod +x setup.sh
     *   `roles/run.invoker`: Allows the service account to invoke (run) the Cloud Run service where your tools are hosted.
     *   `roles/logging.logWriter`: Grants permission to write logs, which is essential for debugging and monitoring your agent.
 
-*   🪣 **Creates a Staging Bucket:** It creates a Google Cloud Storage bucket with a unique name like `agent-staging-YOUR_PROJECT_ID`. This bucket is used by Agent Engine to store your agent's code and files during deployment. If the bucket already exists, it skips this step.
+*   🪣 **Creates a Staging Bucket:** It creates a Google Cloud Storage bucket with a unique name like `agent-staging-YOUR_PROJECT_ID`. This bucket is used by Agent Engine to store your agent's code and files during deployment. If the bucket already exists, it skips this step. The script also updates your `.env` file with the staging bucket name.
 
 *   ✅ **Confirmation:** Finally, the script prints the name of the staging bucket to your console so you know where your agent's files will be staged.
 

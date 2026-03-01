@@ -51,4 +51,4 @@ else
     echo "✅ Staging bucket gs://${STAGING_BUCKET} already exists."
 fi
 
-echo "STAGING_BUCKET=${STAGING_BUCKET}"
+echo "STAGING_BUCKET=\"gs://${STAGING_BUCKET}\"" | tee -a .env
