@@ -13,8 +13,8 @@ from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnecti
 
 from dotenv import load_dotenv
 
-# Load environment variables from the same directory as this file
-env_path = Path(__file__).parent / '.env'
+# Load environment variables from the parent directory as this file
+env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
 logging.basicConfig(level=logging.INFO)
