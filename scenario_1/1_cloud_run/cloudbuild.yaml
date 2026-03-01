@@ -28,6 +28,8 @@ steps:
       - '--platform=managed'
       # This flag makes the service private, requiring IAM authentication
       - '--no-allow-unauthenticated'
+      # This flag ensures at least one container is always running to avoid cold starts
+      - '--min-instances=1'
 
 # Substitution variables - should match .env file
 substitutions:
