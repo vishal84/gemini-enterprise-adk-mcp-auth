@@ -136,11 +136,11 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 4. Sample agent interaction below:
 
-<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
+<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
   <strong>User:</strong> Hi! What can you do?
 </div>
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; color: #000">
+<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
   <strong>Agent:</strong> Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?</code></pre>
 </div>
 
@@ -148,8 +148,9 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
   <strong>User:</strong> Provide me with a SQL code snippet
 </div>
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; color: #000">
-  <strong>Agent:</strong> SELECT
+<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
+  <strong>Agent:</strong>
+<pre><code>SELECT
     o.order_id,
     o.order_date,
     c.customer_name,
@@ -170,3 +171,7 @@ ORDER BY
     o.order_date DESC, c.customer_name ASC;
 </code></pre>
 </div>
+
+## 3. Deploy the ADK agent to Agent Engine and Register with Gemini Enterprise
+
+
