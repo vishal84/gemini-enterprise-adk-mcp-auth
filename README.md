@@ -72,5 +72,6 @@ See the `scenario_1/README.md` file for a comprehensive guide that covers:
 - Running the ADK agent locally with `adk web`.
 - Deploying the ADK agent to Agent Engine and registering with Gemini Enterprise.
 
-## Scenario 2: ...
+## Scenario 2: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using End User Based Authentication
+
 
