@@ -78,7 +78,7 @@ http://127.0.0.1:8080 proxies to https://code-snippet-mcp-server-ofleaf4vuq-uc.a
 uv run python test_mcp_client.py
 ```
 
-Upon execution, you should see calls to the `list_tools` operation of the MCP server and individual tool calls for SQL and json snippets.
+Upon execution, you should see calls to the `list_tools` operation of the MCP server and individual tool calls for `SQL` and `json` snippets.
 
 When finished, close the terminal used to run the test script and press `Ctrl+C` in the terminal running the Cloud Run service proxy to stop the proxy.
 
