@@ -182,5 +182,39 @@ Run the following command from the `2_adk_agents` directory to deploy the agent:
 uv run adk deploy agent_engine --display_name "Code Snippet Agent" --description "ADK agent that returns code snippets from an MCP server hosted on Cloud Run" --env_file .env ./agent_engine/
 ```
 
+Once the agent is deployed you will see output in the terminal similar to the following:
+
+```diff
+✅ Created agent engine: projects/project-number/locations/us-central1/reasoningEngines/agent-engine-id
+```
+
+Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder under the key `AGENT_ENGINE_ID`.
+
 ## 4. Register the ADK Agent with Gemini Enterprise
 
+Now that the agent has been deployed to Agent Engine, it can be registered with Gemini Enterprise. To do so run the following script:
+
+1. Navigate to the `2_agents/` directory:
+
+2. Run the script to register the ADK agent to Gemini Enterprise:
+
+```bash
+uv run agent_engine/register_to_ge.py
+```
+
+Once finished you will see output similar to the following in your terminal:
+
+```text
+2026-03-01 17:42:52,006 [INFO] ✅ Successfully registered agent to Gemini Enterprise!
+2026-03-01 17:42:52,006 [INFO] 💬 Response: ....
+```
+
+Now that the agent has been registered to Gemini Enterprise you can use the Gemini Enterprise web application to invoke the agent.
+
+3. Open the Gemini Enterprise application you registered the agent to in your web browser.
+
+4. From the main chat interface, navigate to **Agents** > **Code Snippet Agent**
+
+5. Run the same sample queries provided for testing locally. The output will look similar to the below image:
+
+![alt text](./img/gemini_enterprise_csa.png)

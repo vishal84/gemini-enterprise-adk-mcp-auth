@@ -8,6 +8,7 @@ To run each scenario you must have:
 - A Google Cloud project
 - `gcloud` installed locally
 - `uv` installed locally to manage Python dependencies and create virtual environments
+- A Gemini Enterprise app created in your Google Cloud project
 
 #### 1. 🔑 Authenticate to Your GCP Project (CLI)
 
@@ -64,4 +65,6 @@ This project uses `uv` to manage Python dependencies. To install `uv`, do the fo
 In scenario 1, you will deploy an MCP server hosted on Cloud Run and test its invocation using `adk web` locally and when deployed to Agent Engine and registered with Gemini Enterprise.
 
 Navigate to the `scenario_1/` folder and open the `README.md` file to follow the guide for deploying the MCP server hosted on Cloud Run sample ADK agent locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server
+
+## Scenario 2: ...
 
