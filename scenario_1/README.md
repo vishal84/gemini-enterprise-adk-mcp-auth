@@ -122,5 +122,13 @@ uv run adk web
 
 This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interface/) interface in your local terminal so that you can test the agent via a chat interface.
 
-3. 
+```diff
++ +-----------------------------------------------------------------------------+
++ | ADK Web Server started                                                      |
++ |                                                                             |
++ | For local testing, access at http://127.0.0.1:8000.                         |
++ +-----------------------------------------------------------------------------+
+```
+
+3. Open the link returned when running `adk web` in your browser. 
 
