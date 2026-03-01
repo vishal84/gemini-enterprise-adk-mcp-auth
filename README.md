@@ -64,7 +64,11 @@ This project uses `uv` to manage Python dependencies. To install `uv`, do the fo
 
 In scenario 1, you will deploy an MCP server hosted on Cloud Run and test its invocation using `adk web` locally and when deployed to Agent Engine and registered with Gemini Enterprise.
 
-Navigate to the `scenario_1/` folder and open the `README.md` file to follow the guide for deploying the MCP server hosted on Cloud Run sample ADK agent locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server
+See the `scenario_1/README.md` file for a comprehensive guide that covers:
+
+- Deploying the MCP server to Cloud Run.
+- Running the ADK agent locally with `adk web`.
+- Deploying the ADK agent to Agent Engine and registering with Gemini Enterprise.
 
 ## Scenario 2: ...
 
