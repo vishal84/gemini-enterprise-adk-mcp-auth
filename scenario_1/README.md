@@ -1,6 +1,13 @@
 # Scenario 1: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using Service to Service Authentication
 
-This scenario elaborates setup and testing of an ADK agent deployed locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server hosted on Cloud Run. The Cloud Run server hosts an MCP server which returns sample code snippets in various languages i.e. SQL, python, json, javascript, go. The ADK agent requires the Cloud Run Invoker role in order to execute the tools that the MCP server makes available.
+This scenario guides you through setting up and testing an ADK agent that consumes a toolset from an MCP server. The guide covers two deployment options for the agent:
+
+*   **Local:** Running the agent with `adk web`.
+*   **Agent Engine:** Deploying the agent to Agent Engine and registering it with Gemini Enterprise.
+
+The MCP server is hosted on Cloud Run and provides tools that return sample code snippets in several languages, including SQL, Python, JSON, JavaScript and Go.
+
+To access these tools, the ADK agent's service account must be granted the **Cloud Run Invoker** role.
 
 To begin, you will deploy the Cloud Run server by building a container of the MCP server found in the `1_cloud_run/` directory.  Once deployed you will follow steps to test the ADK agent locally using `adk web` then deploy it to Agent Engine and register it with Gemini Enterprise.
 
