@@ -1,6 +1,6 @@
 # Scenario 1: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using Service to Service Authentication
 
-This scenario elaborates setup and testing of an ADK agent deployed locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server hosted on Cloud Run.
+This scenario elaborates setup and testing of an ADK agent deployed locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server hosted on Cloud Run. The Cloud Run server hosts an MCP server which returns sample code snippets in various languages i.e. SQL, python, json, javascript, go. The ADK agent requires the Cloud Run Invoker role in order to execute the tools that the MCP server makes available.
 
 To begin, you will deploy the Cloud Run server by building a container of the MCP server found in the `1_cloud_run/` directory.  Once deployed you will follow steps to test the ADK agent locally using `adk web` then deploy it to Agent Engine and register it with Gemini Enterprise.
 
@@ -14,7 +14,66 @@ To deploy the MCP server:
 cd 1_cloud_run/
 ```
 
+2. Make the `deploy.sh` script runnable in your terminal:
 
+```bash
+chmod +x deploy.sh
+```
+
+3. Run the `deploy.sh` script:
+
+```bash
+./deploy.sh
+```
+
+The ``deploy.sh`` script automates the deployment of a containerized application to Google Cloud Run. When you run this script, it performs the following actions:
+
+1.  **⚙️ Configuration and Validation:**
+    *   It loads any environment variables you have set in a `.env` file.
+    *   It checks if you have the `gcloud` command-line tool installed.
+    *   It determines your Google Cloud Project ID and a default region (`us-central1`), though you can override these with environment variables.
+
+2.  **☁️ Enables Google Cloud Services:**
+    *   It silently enables the necessary Google Cloud services for you, including Cloud Run for hosting, Artifact Registry for storing container images, and Cloud Build for running the deployment pipeline.
+
+3.  **🔐 Permissions Management:**
+    *   The script automatically grants the necessary IAM permissions to the Cloud Build service account. This allows it to deploy the application to Cloud Run on your behalf, so you don't have to manually configure these permissions.
+
+4.  **📦 Container Repository Setup:**
+    *   It ensures that a container repository exists in Artifact Registry. If it doesn't, the script creates it for you. This repository is where the container image for your application will be stored.
+
+5.  **🚀 Application Build and Deployment:**
+    *   The script initiates a Cloud Build process, which reads the ``cloudbuild.yaml`` file to build your application's container image, push it to the Artifact Registry repository, and then deploy it to Cloud Run.
+
+6.  **🎉 Provides Service URL:**
+    *   Once the deployment is complete, the script fetches the URL of your newly deployed service and prints it to the console, so you can easily access your running application.
+
+In short, the ``deploy.sh`` script is a one-stop-shop 🚀 for taking the code in the `1_cloud_run` directory and getting it live on Google Cloud Run without requiring you to perform the individual `gcloud` commands manually.
 
 ### Test the MCP Server
+
+To quickly test the deployed MCP server on Cloud Run, run the `test_mcp_client.py` script.
+
+1. Ensure you are in the `1_cloud_run/` directory.
+
+2. Run the [Cloud Run service proxy](https://docs.cloud.google.com/sdk/gcloud/reference/run/services/proxy) to allow your local terminal to authenticate to the service:
+
+```bash
+gcloud run services proxy code-snippet-mcp-server --region=us-central1
+```
+
+You will see output similar to the following in your terminal:
+
+```text
+Proxying to Cloud Run service [code-snippet-mcp-server] in project [project-id] region [us-central1]
+http://127.0.0.1:8080 proxies to https://code-snippet-mcp-server-ofleaf4vuq-uc.a.run.app
+```
+
+3. In a new terminal window, execute the test script:
+
+```bash
+uv run python test_mcp_client.py
+```
+
+Upon execution, you should see calls to the list tools operation of the MCP server and individual tool calls for SQL and json snippets.
 

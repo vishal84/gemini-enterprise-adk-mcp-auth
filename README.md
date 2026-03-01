@@ -9,7 +9,6 @@ To run each scenario you must have:
 - `gcloud` installed locally
 - `uv` installed locally to manage Python dependencies and create virtual environments
 
-
 #### 1. 🔑 Authenticate to Your GCP Project (CLI)
 
 1. Sign in to Google Cloud in your browser from the CLI.
@@ -44,7 +43,7 @@ gcloud auth list
 
 #### 2. 🛠️ Install Local Dependencies with `uv`
 
-This project uses `uv` to manage Python dependencies. To install `uv`, follow these steps:
+This project uses `uv` to manage Python dependencies. To install `uv`, do the following:
 
 1.  Install `uv` on your local system.
 
@@ -54,9 +53,15 @@ This project uses `uv` to manage Python dependencies. To install `uv`, follow th
         curl -LsSf https://astral.sh/uv/install.sh | sh
         ```
 
-2.  Once `uv` is installed, you can install the project dependencies using `uv sync`.
+    -   **Windows**:
 
-    ```bash
-    uv sync
-    ```
+        ```powershell
+        powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+        ```
+
+## Scenario 1: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using Service to Service Authentication
+
+In scenario 1, you will deploy an MCP server hosted on Cloud Run and test its invocation using `adk web` locally and when deployed to Agent Engine and registered with Gemini Enterprise.
+
+Navigate to the `scenario_1/` folder and open the `README.md` file to follow the guide for deploying the MCP server hosted on Cloud Run sample ADK agent locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server
 
