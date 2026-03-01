@@ -106,6 +106,10 @@ chmod +x setup.sh
 
 *   ✅ **Confirmation:** Finally, the script prints the name of the staging bucket to your console so you know where your agent's files will be staged.
 
+When the script is finished executing you will see it has confirmed the creation of:
+* A service account `code-snippet-sa@[project-id].iam.gserviceaccount.com`
+* A staging bucket `agent-staging-[project-id]`
+* The roles above granted to the service account
 
 3. Run the following command:
 

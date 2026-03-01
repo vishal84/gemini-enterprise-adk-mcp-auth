@@ -86,55 +86,6 @@ def get_cloud_run_token(target_url: str) -> str:
         logger.info(f"Error fetching Cloud Run ID token for {target_url}: {e}")
         raise
 
-def get_access_token(readonly_context: ReadonlyContext) -> str | None:
-
-    if hasattr(readonly_context, "session") and hasattr(readonly_context.session, "state"):
-        session_state = dict(readonly_context.session.state)
-        logger.info(f"session state keys: {list(session_state.keys())}")
-        
-        for key, value in session_state.items():
-            logger.info(f"Inspecting session state \n key: {key}, \n value: {value}, \n type: {type(value)}")
-
-            # Check for AuthCredential object with OpenID Connect [:10]
-            if isinstance(value, AuthCredential) and value.auth_type == AuthCredentialTypes.OPEN_ID_CONNECT and value.oauth2:
-                if value.oauth2.access_token:
-                    logger.info(f"\n\nFound access_token in AuthCredential object in session state key: \n   * key: {key} \n   * token: {value.oauth2.access_token}\n\n")
-                    return value.oauth2.access_token
-
-            # Direct string token check
-            if isinstance(value, str) and (value.startswith("eyJ") or value.startswith("ya29.")):
-                # Log only the beginning of the token for security
-                logger.info(f"Found token in session state key: {key}, token: {value[:10]}...") 
-                return value
-            
-            # Dictionary check for nested tokens (e.g., in case of a more complex session structure)
-            if isinstance(value, dict):
-                if "access_token" in value:
-                    token = value["access_token"]
-                    if isinstance(token, str) and (token.startswith("eyJ") or token.startswith("ya29.")):
-                        logger.info(f"Found nested token in key: {key}, token: {token[:10]}...")
-                        return token
-                else:
-                    # print dictionary keys
-                    logger.info(f"Inspecting dict key '{key}': {list(value.keys())}")
-
-    logger.info("No token found in session state.")
-    return "None"
-
-def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
-    token = get_access_token(readonly_context)
-
-    if not token:
-        logger.info("No id_token or access_token found!")
-        return {}
-    
-    return {
-        "Authorization": f"Bearer {token.strip()}",
-        "Accept": "application/json, text/event-stream",
-        "Cache-Control": "no-cache"
-    }
-
-
 def mcp_logger(log_statement: str):
     logger.info(f"[McpToolset] {log_statement}", exc_info=True)
 
@@ -145,18 +96,15 @@ cloud_run_mcp = McpToolset(
             "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
         }
     ),
-    # header_provider=mcp_header_provider,
-    # auth_scheme=auth_scheme,
-    # auth_credential=auth_credential,
     errlog=mcp_logger
 )
 
 root_agent = LlmAgent(
     model="gemini-2.5-pro",
     name="code_snippet_agent",
-    instruction="""You are a helpful agent that has access to an MCP tool used to retrieve code snippets.
+    instruction="""You are a code snippet agent that has access to an MCP tool used to retrieve code snippets.
     - If a user asks what you can do, answer that you can provide code snippets from the MCP tool you have access to.
-    - Provide the type as an input required to ask for a code snippet i.e. sql, python, javascript, json, or go.
+    - Provide the types of snippets you can return i.e. sql, python, javascript, json, or go.
     - Always use the MCP tool to get code snippets, never make up code snippets on your own.
     """,
     tools=[cloud_run_mcp]
