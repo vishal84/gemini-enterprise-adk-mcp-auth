@@ -15,28 +15,28 @@ PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projec
 
 # The service account to create
 SA_NAME="code-snippet-sa"
-SERVICE_IDENTITY_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+SERVICE_ACCOUNT_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
 # Create the service account if it doesn't exist
-if ! gcloud iam service-accounts describe "${SERVICE_IDENTITY_EMAIL}" --project "${PROJECT_ID}" &> /dev/null; then
-    echo "🤖 Creating service account ${SERVICE_IDENTITY_EMAIL}..."
+if ! gcloud iam service-accounts describe "${SERVICE_ACCOUNT_EMAIL}" --project "${PROJECT_ID}" &> /dev/null; then
+    echo "🤖 Creating service account ${SERVICE_ACCOUNT_EMAIL}..."
     gcloud iam service-accounts create "${SA_NAME}" \
         --display-name="Agent Engine Service Account" \
         --project="${PROJECT_ID}" \
         --condition=None > /dev/null
 else
-    echo "✅ Service account ${SERVICE_IDENTITY_EMAIL} already exists."
+    echo "✅ Service account ${SERVICE_ACCOUNT_EMAIL} already exists."
 fi
 
 # Grant Cloud Run Invoker role
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-    --member="serviceAccount:${SERVICE_IDENTITY_EMAIL}" \
+    --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
     --role="roles/run.invoker" \
     --condition=None > /dev/null
 
 # Grant Logs Writer role
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-    --member="serviceAccount:${SERVICE_IDENTITY_EMAIL}" \
+    --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
     --role="roles/logging.logWriter" \
     --condition=None > /dev/null
 

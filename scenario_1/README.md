@@ -83,3 +83,37 @@ Now that you've confirmed your MCP server is up and running on Cloud Run you wil
 
 ## 2. Run the ADK agent locally
 
+To run the ADK agent locally using `adk web` run do the following:
+
+1. Navigate to the `2_adk_agents` directory:
+
+2. Run the `setup.sh` script:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+*   🆔 **Retrieves Project ID:** The script starts by getting your current Google Cloud Project ID from your `gcloud` configuration and exits if it's not set.
+
+*   🤖 **Creates a Service Account:** It creates a dedicated service account named `code-snippet-sa` within your project. If the account already exists, it simply confirms its presence. This account will be used by Agent Engine to securely run your agent.
+
+*   🔐 **Grants Necessary Permissions:** The script assigns two key roles to the new service account:
+    *   `roles/run.invoker`: Allows the service account to invoke (run) the Cloud Run service where your tools are hosted.
+    *   `roles/logging.logWriter`: Grants permission to write logs, which is essential for debugging and monitoring your agent.
+
+*   🪣 **Creates a Staging Bucket:** It creates a Google Cloud Storage bucket with a unique name like `agent-staging-YOUR_PROJECT_ID`. This bucket is used by Agent Engine to store your agent's code and files during deployment. If the bucket already exists, it skips this step.
+
+*   ✅ **Confirmation:** Finally, the script prints the name of the staging bucket to your console so you know where your agent's files will be staged.
+
+
+3. Run the following command:
+
+```bash
+uv run adk web
+```
+
+This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interface/) interface in your local terminal so that you can test the agent via a chat interface.
+
+3. 
+

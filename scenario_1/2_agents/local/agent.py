@@ -29,71 +29,12 @@ load_dotenv(dotenv_path=env_path)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
 SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL")
 
-# Define the OAuth2 authentication scheme for OpenID Connect with Google as the provider. The token returned
-# by this flow will be used to provide the MCP server headers it can use to make authorization decisions based 
-# on the authenticated user's identity and permissions. The scopes defined here specify the level of access the 
-# token will have, including access to the user's email, profile, and cloud platform resources.
-
-auth_scheme = OAuth2(
-    flows=OAuthFlows(
-        authorizationCode=OAuthFlowAuthorizationCode(
-            authorizationUrl="https://accounts.google.com/o/oauth2/auth",
-            tokenUrl="https://oauth2.googleapis.com/token",
-            refreshUrl="https://oauth2.googleapis.com/token",
-            scopes={
-                "https://www.googleapis.com/auth/cloud-platform": "Cloud platform scope",
-                "https://www.googleapis.com/auth/userinfo.email": "Email access scope",
-                "https://www.googleapis.com/auth/userinfo.profile": "Profile access scope",
-                "openid": "OpenID Connect scope",
-            },
-        )
-    )
-)
-
-auth_credential = AuthCredential(
-    auth_type=AuthCredentialTypes.OPEN_ID_CONNECT,
-    oauth2=OAuth2Auth(
-        client_id=CLIENT_ID, 
-        client_secret=CLIENT_SECRET,
-        redirect_uri="http://127.0.0.1:8000/dev-ui/",
-    ),
-)
-
-auth_config = AuthConfig(
-    auth_scheme=auth_scheme,
-    auth_credential=auth_credential
-)
-
-def get_user_credentials(callback_context: CallbackContext, ):
-    auth_response = callback_context.get_auth_response(auth_config=auth_config)
-    
-    if auth_response:
-      logging.info("Received new auth response. Creating credentials.")
-      # The ADK has already exchanged the auth code for tokens.
-      # We create a google.oauth2.credentials.Credentials object from the
-      # response provided by the ADK.
-      creds = Credentials(
-          token=auth_response.oauth2.access_token,
-          refresh_token=auth_response.oauth2.refresh_token,
-          token_uri=auth_scheme.flows.authorizationCode.tokenUrl,
-          client_id=CLIENT_ID,
-          client_secret=CLIENT_SECRET,
-          scopes=list(auth_scheme.flows.authorizationCode.scopes.keys()),
-      )
-
-      logger.info(f"Created credentials from auth response: {creds}")
-      # Cache the new credentials in the session state for future use.
-      callback_context.session.state["access_token"] = creds.to_json()
-
-
 # This function retrieves an ID token for authenticating to the Cloud Run service using impersonated credentials.
-# It first loads the source credentials from the environment (which could be user credentials or service account 
-# credentials), then creates impersonated credentials for the target service account, and finally generates an 
+# It first loads the source credentials from the environment (using the application default credentials source via gcloud), 
+# then creates impersonated credentials for the target service account, and finally generates an 
 # ID token with the appropriate audience for the Cloud Run service. The ID token is used in the Authorization 
 # header when making requests to the MCP server running on Cloud Run (protected by IAM authentication).
 def get_cloud_run_token(target_url: str) -> str:
