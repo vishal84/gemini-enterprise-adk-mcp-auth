@@ -10,6 +10,8 @@ To run each scenario you must have:
 - `uv` installed locally to manage Python dependencies and create virtual environments
 - A Gemini Enterprise app created in your Google Cloud project
 
+## Setup
+
 #### 1. 🔑 Authenticate to Your GCP Project (CLI)
 
 1. Sign in to Google Cloud in your browser from the CLI.
