@@ -130,5 +130,43 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 + +-----------------------------------------------------------------------------+
 ```
 
-3. Open the link returned when running `adk web` in your browser. 
+3. Open the link returned when running `adk web` in your browser. Change the dropdown to the `local/` folder to test your agent.
 
+#### Test the agent locally
+
+4. Sample agent interaction below:
+
+<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
+  <strong>User:</strong> Hi! What can you do?
+</div>
+
+<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; color: #000">
+  <strong>Agent:</strong> Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?</code></pre>
+</div>
+
+<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
+  <strong>User:</strong> Provide me with a SQL code snippet
+</div>
+
+<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; color: #000">
+  <strong>Agent:</strong> SELECT
+    o.order_id,
+    o.order_date,
+    c.customer_name,
+    p.product_name,
+    oi.quantity,
+    oi.price_per_unit
+FROM
+    orders AS o
+JOIN
+    customers AS c ON o.customer_id = c.customer_id
+JOIN
+    order_items AS oi ON o.order_id = oi.order_id
+JOIN
+    products AS p ON oi.product_id = p.product_id
+WHERE
+    o.order_date >= '2024-01-01'
+ORDER BY
+    o.order_date DESC, c.customer_name ASC;
+</code></pre>
+</div>
