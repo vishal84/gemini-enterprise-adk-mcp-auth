@@ -48,6 +48,8 @@ The ``deploy.sh`` script automates the deployment of a containerized application
 6.  **🎉 Provides Service URL:**
     *   Once the deployment is complete, the script fetches the URL of your newly deployed service and prints it to the console, so you can easily access your running application.
 
+
+
 In short, the ``deploy.sh`` script is a one-stop-shop 🚀 for taking the code in the `1_cloud_run` directory and getting it live on Google Cloud Run without requiring you to perform the individual `gcloud` commands manually.
 
 ### Test the MCP Server
