@@ -1,0 +1,13 @@
+[project]
+name = "code-snippet-mcp-server"
+version = "0.1.0"
+description = "A Fast MCP server hosted on Cloud Run that returns code snippets"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastmcp==2.13.1",
+    "google-adk>=1.23.0",
+    "python-dotenv>=1.0.0",
+    "google-auth",
+    "requests"
+]

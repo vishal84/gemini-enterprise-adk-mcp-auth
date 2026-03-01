@@ -1,21 +1,14 @@
 # Gemini Enterprise ADK MCP Auth
 
-This repository provides a sample implementation of a Model Context Protocol (MCP) server hosted on Cloud Run as well as two ADK agents that use authentication to perform actions on behalf of an end user. You will explore the steps involved locally using `adk web` as well as when deploying to Gemini Enterprise.
+This repository provides two sample scenarios on how to deploy ADK agents that consume an MCP server's tools both locally, using `adk web`, and via Agent Engine registered with Gemini Enterprise. Each scenario will guide you through consuming an MCP server using a service account 
 
-## Project Structure
+### Prerequisites
 
-- **`1_cloud_run/`**: Contains the source code and deployment scripts for a FastAPI-based MCP server designed to be deployed on Google Cloud Run.
-- **`2_agents/`**: Contains sample agent definitions for use with the MCP server that perform end user authentication.
+To run each scenario you must have:
+- A Google Cloud project
+- `gcloud` installed locally
+- `uv` installed locally to manage Python dependencies and create virtual environments
 
-## Getting Started
-
-This guide will walk you through deploying the MCP server and running the agents.
-
-### 1. Deploy the MCP Server
-
-The MCP server is a containerized FastAPI application that can be deployed to Google Cloud Run. In this section, you will authenticate with your Google Cloud project and deploy a containerized FastMCP server to Cloud Run.
-
-To deploy the Cloud Run server, you will first need to authenticate the `gcloud` CLI to your GCP project.
 
 #### 1. 🔑 Authenticate to Your GCP Project (CLI)
 
@@ -66,78 +59,4 @@ This project uses `uv` to manage Python dependencies. To install `uv`, follow th
     ```bash
     uv sync
     ```
-
-
-#### 3. 🚀 Deploy to Cloud Run
-
-Once you have authenticated to your GCP project, you can deploy the MCP server to Cloud Run using the provided `deploy.sh` script.
-
-1.  Navigate to the `1_cloud_run` directory from the root of the project:
-
-    ```bash
-    cd 1_cloud_run
-    ```
-
-2.  Before running the script, create a `.env` file to configure the deployment. You can copy the example file:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-    Then, edit the `.env` file with your desired settings for `PROJECT_ID`, `REGION`, etc. If you don't set `PROJECT_ID` in the `.env` file, the script will try to use the one from your `gcloud` configuration.
-
-3.  Make the deployment script executable:
-
-    ```bash
-    chmod +x deploy.sh
-    ```
-
-4.  Run the deployment script:
-
-    ```bash
-    ./deploy.sh
-    ```
-
-The script will build the container image using Cloud Build, push it to Artifact Registry, and then deploy the service to Cloud Run. At the end of the process, it will print the URL of your deployed service. It will take a few minutes for the deployment to complete. You can open your Cloud Console to the Cloud Build service to watch the build complete.
-
-## Agent 1: ADK Web
-
-To deploy the first agent, change directories to the `2_agents/` folder. From repository root:
-```bash
-cd 2_agents/
-```
-
-### 1. Run Setup Scripts
-
-Because the ADK agent in these examples require the ability to interact with the MCP server hosted on Cloud Run, you will grant the default Agent Engine service account the `run.invoker` role to it when deploying the agent. 
-
-1. In the `2_agent/` folder, run the `setup_iam.sh` script.
-
-```bash
-chmod +x setup_iam.sh
-./setup_iam.sh
-```
-
-Once the script completes successfully proceed to the next step.
-
-### 2. Deploy the agent to Agent Engine
-
-Now you will run the agent locally using `adk web`:
-
-1.  Navigate to the `adk_web_agent` directory:
-    ```bash
-    cd adk_web_agent
-    ```
-
-2.  Install the dependencies using `uv`:
-    ```bash
-    uv sync
-    ```
-
-3.  Run the agent using `uv`:
-    ```bash
-    uv run adk web --no-reload
-    ```
-
-### 3. Prompt the agent using `adk web`
 
