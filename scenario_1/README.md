@@ -197,6 +197,22 @@ Once the agent is deployed you will see output in the terminal similar to the fo
 
 Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder under the key `AGENT_ENGINE_ID`.
 
+### Add permissions to the default Agent Engine Service Account
+
+To test locally you used a service account created with the `Cloud Run Invoker` and `Logs Writer` IAM roles added to it. When deploying to Agent Engine a default service account is created upon first deployment that can be used as the agent instance's identity. Grant the default service account the same roles:
+
+```bash
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects list --filter="PROJECT_ID:$PROJECT_ID" --format="value(PROJECT_NUMBER)")
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:service-$PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com" \
+    --role="roles/run.invoker"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:service-$PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com" \
+    --role="roles/logging.logWriter"
+```
+
 ## 4. Register the ADK Agent with Gemini Enterprise
 
 Now that the agent has been deployed to Agent Engine, it can be registered with Gemini Enterprise. To do so run the following script:

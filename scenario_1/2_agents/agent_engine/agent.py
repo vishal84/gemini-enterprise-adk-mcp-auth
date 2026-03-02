@@ -46,7 +46,7 @@ cloud_run_mcp = McpToolset(
             "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
         }
     ),
-    errlog=mcp_logger
+    errlog=mcp_logger,
 )
 
 root_agent = LlmAgent(

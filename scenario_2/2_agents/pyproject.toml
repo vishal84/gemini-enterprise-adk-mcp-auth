@@ -1,7 +1,7 @@
 [project]
-name = "code-snippet-agent"
+name = "user-info-agent"
 version = "0.1.0"
-description = "An ADK agent that consumes an MCP server deployed on Cloud Run registered with Gemini Enterprise."
+description = "An ADK agent that consumes an MCP server deployed on Cloud Run using end user authentication registered with Gemini Enterprise."
 requires-python = ">=3.12"
 dependencies = [
     "fastmcp==2.13.1",
