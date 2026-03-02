@@ -20,8 +20,10 @@ load_dotenv(dotenv_path=env_path)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
+AUTH_ID = os.getenv("AUTH_ID", "user-info-auth")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
-SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL")
 
 # This function retrieves an ID token for authenticating to the Cloud Run service using the service account of the 
 # running agent engine instance. The ID token is used in the Authorization header when making requests to the MCP 

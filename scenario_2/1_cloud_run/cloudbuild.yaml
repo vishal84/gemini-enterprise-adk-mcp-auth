@@ -26,8 +26,6 @@ steps:
       - '--region=${_REGION}'
       - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:latest'
       - '--platform=managed'
-      # This flag makes the service private, requiring IAM authentication
-      - '--no-allow-unauthenticated'
       # This flag ensures at least one container is always running to avoid cold starts
       - '--min-instances=1'
 

@@ -1,6 +1,13 @@
 # Scenario 1: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using Service to Service Authentication
 
-This scenario elaborates setup and testing of an ADK agent deployed locally using `adk web` and to Agent Engine registered with Gemini Enterprise to consume an MCP server hosted on Cloud Run. The Cloud Run server hosts an MCP server which returns sample code snippets in various languages i.e. SQL, python, json, javascript, go. The ADK agent requires the Cloud Run Invoker role in order to execute the tools that the MCP server makes available.
+This scenario guides you through setting up and testing an ADK agent that consumes a toolset from an MCP server. The guide covers two deployment options for the agent:
+
+*   **Local:** Running the agent with `adk web`.
+*   **Agent Engine:** Deploying the agent to Agent Engine and registering it with Gemini Enterprise.
+
+The MCP server is hosted on Cloud Run and provides tools that return sample code snippets in several languages, including SQL, Python, JSON, JavaScript and Go.
+
+To access these tools, the ADK agent's service account must be granted the **Cloud Run Invoker** role.
 
 To begin, you will deploy the Cloud Run server by building a container of the MCP server found in the `1_cloud_run/` directory.  Once deployed you will follow steps to test the ADK agent locally using `adk web` then deploy it to Agent Engine and register it with Gemini Enterprise.
 
@@ -189,6 +196,22 @@ Once the agent is deployed you will see output in the terminal similar to the fo
 ```
 
 Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder under the key `AGENT_ENGINE_ID`.
+
+### Add permissions to the default Agent Engine Service Account
+
+To test locally you used a service account created with the `Cloud Run Invoker` and `Logs Writer` IAM roles added to it. When deploying to Agent Engine a default service account is created upon first deployment that can be used as the agent instance's identity. Grant the default service account the same roles as the service account created earlier:
+
+```bash
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects list --filter="PROJECT_ID:$PROJECT_ID" --format="value(PROJECT_NUMBER)")
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:service-$PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com" \
+    --role="roles/run.invoker"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:service-$PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com" \
+    --role="roles/logging.logWriter"
+```
 
 ## 4. Register the ADK Agent with Gemini Enterprise
 
