@@ -64,27 +64,6 @@ auth_config = AuthConfig(
     auth_credential=auth_credential
 )
 
-# def get_user_credentials(callback_context: CallbackContext):
-#     auth_response = callback_context.get_auth_response(auth_config=auth_config)
-    
-#     if auth_response:
-#       logging.info("Received new auth response. Creating credentials.")
-#       # The ADK has already exchanged the auth code for tokens.
-#       # We create a google.oauth2.credentials.Credentials object from the
-#       # response provided by the ADK.
-#       creds = Credentials(
-#           token=auth_response.oauth2.access_token,
-#           refresh_token=auth_response.oauth2.refresh_token,
-#           token_uri=auth_scheme.flows.authorizationCode.tokenUrl,
-#           client_id=CLIENT_ID,
-#           client_secret=CLIENT_SECRET,
-#           scopes=list(auth_scheme.flows.authorizationCode.scopes.keys()),
-#       )
-
-#       logger.info(f"Created credentials from auth response: {creds}")
-#       # Cache the new credentials in the session state for future use.
-#       callback_context.session.state["access_token"] = creds.to_json()
-
 def get_access_token(readonly_context: ReadonlyContext) -> str | None:
 
     if hasattr(readonly_context, "session") and hasattr(readonly_context.session, "state"):

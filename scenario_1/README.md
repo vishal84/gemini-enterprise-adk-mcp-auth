@@ -199,7 +199,7 @@ Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder 
 
 ### Add permissions to the default Agent Engine Service Account
 
-To test locally you used a service account created with the `Cloud Run Invoker` and `Logs Writer` IAM roles added to it. When deploying to Agent Engine a default service account is created upon first deployment that can be used as the agent instance's identity. Grant the default service account the same roles:
+To test locally you used a service account created with the `Cloud Run Invoker` and `Logs Writer` IAM roles added to it. When deploying to Agent Engine a default service account is created upon first deployment that can be used as the agent instance's identity. Grant the default service account the same roles as the service account created earlier:
 
 ```bash
 export PROJECT_ID=$(gcloud config get-value project)
