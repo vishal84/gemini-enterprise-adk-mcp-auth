@@ -44,9 +44,7 @@ def mcp_logger(log_statement: str):
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
         url=MCP_SERVER_URL,
-        headers={
-            "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
-        }
+        
     ),
     errlog=mcp_logger,
 )
@@ -59,5 +57,6 @@ root_agent = LlmAgent(
     - Provide the types of snippets you can return i.e. sql, python, javascript, json, or go.
     - Always use the MCP tool to get code snippets, never make up code snippets on your own.
     """,
-    tools=[cloud_run_mcp]
+    tools=[cloud_run_mcp],
+    before_tool_callback=[dynamic_token_injection]
 )

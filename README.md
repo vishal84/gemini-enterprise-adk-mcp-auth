@@ -74,4 +74,12 @@ See the `scenario_1/README.md` file for a comprehensive guide that covers:
 
 ## Scenario 2: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using End User Based Authentication
 
+In scenario 2, you will deploy an MCP server hosted on Cloud Run and test its invocation using adk web locally and when deployed to Agent Engine and registered with Gemini Enterprise. In this use case, you will use end-user authentication to invoke tools from the MCP server.
+
+See the scenario_2/README.md file for a comprehensive guide that covers:
+
+- Deploying the MCP server to Cloud Run.
+- Running the ADK agent locally with adk web.
+- Registering a Gemini Enterprise `auth_id` used for end user authentication.
+- Deploying the ADK agent to Agent Engine and registering with Gemini Enterprise.
 
