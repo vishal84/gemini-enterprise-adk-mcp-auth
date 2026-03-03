@@ -1,12 +1,15 @@
 import os
+import re
 import logging
+from ast import Dict
 from pathlib import Path
-
-import google.auth
-import google.auth.transport.requests
-import google.oauth2.id_token
+from typing import Optional
 
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
+
+from google.adk.tools.tool_context import ToolContext
+from google.adk.tools.base_tool import BaseTool
 
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
@@ -25,18 +28,37 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
 
-# This function retrieves an ID token for authenticating to the Cloud Run service using the service account of the 
-# running agent engine instance. The ID token is used in the Authorization header when making requests to the MCP 
-# server running on Cloud Run (protected by IAM authentication).
-def get_cloud_run_token(target_url: str) -> str:
+# This function retrieves a token for authenticating to the Cloud Run service using the end users credentials via an auth_id 
+# registered to Gemini Enterprise. The token is used in the Authorization header when making requests to the MCP 
+# server running on Cloud Run to run tool calls as the end user.
+def dynamic_token_injection(tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext) -> Optional[Dict]:
+    token_key = None
+    pattern = re.compile(r'^AUTH_ID.*')
 
-    audience = target_url.split('/mcp')[0]
-    logger.info(f"Audience: {audience}")
+    state_dict = tool_context.state.to_dict()
+    matched_auth = {key: value for key, value in state_dict.items() if pattern.match(key)}
+    if len(matched_auth) > 0:
+        token_key = list(matched_auth.keys())[0]
+    else:
+        print("No valid tokens found")
+        return None
+    access_token = tool_context.state[token_key]
+    # dynamic_auth_config = {DYNAMIC_AUTH_INTERNAL_KEY: access_token}
+    # args[DYNAMIC_AUTH_PARAM_NAME] = json.dumps(dynamic_auth_config)
+    return None
 
-    auth_req = google.auth.transport.requests.Request()
-    id_token = google.oauth2.id_token.fetch_id_token(auth_req, audience)
+def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
+    token = readonly_context.state.get(AUTH_ID)
 
-    return id_token
+    if not token:
+        logger.info("No id_token or access_token found!")
+        return {}
+    
+    return {
+        "Authorization": f"Bearer {token.strip()}",
+        "Accept": "application/json, text/event-stream",
+        "Cache-Control": "no-cache"
+    }
 
 def mcp_logger(log_statement: str):
     logger.info(f"[McpToolset] {log_statement}", exc_info=True)
@@ -44,8 +66,8 @@ def mcp_logger(log_statement: str):
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
         url=MCP_SERVER_URL,
-        
     ),
+    header_provider=mcp_header_provider,
     errlog=mcp_logger,
 )
 
