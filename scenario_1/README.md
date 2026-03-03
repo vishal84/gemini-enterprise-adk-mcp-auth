@@ -166,37 +166,30 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 > User: Hi! What can you do?
 
+> Agent: Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?
 
-```diff
-- Agent: Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?
-```
+> User: Provide me with a SQL code snippet
 
-```diff
-+ User: Provide me with a SQL code snippet
-```
-
-```diff
-- Agent:
-- SELECT
--     o.order_id,
--     o.order_date,
--     c.customer_name,
--     p.product_name,
--     oi.quantity,
--     oi.price_per_unit
-- FROM
--     orders AS o
-- JOIN
--     customers AS c ON o.customer_id = c.customer_id
-- JOIN
--     order_items AS oi ON o.order_id = oi.order_id
-- JOIN
--     products AS p ON oi.product_id = p.product_id
-- WHERE
--     o.order_date >= '2024-01-01'
-- ORDER BY
--     o.order_date DESC, c.customer_name ASC;
-```
+> Agent:
+> SELECT
+>     o.order_id,
+>     o.order_date,
+>     c.customer_name,
+>     p.product_name,
+>     oi.quantity,
+>     oi.price_per_unit
+> FROM
+>     orders AS o
+> JOIN
+>     customers AS c ON o.customer_id = c.customer_id
+> JOIN
+>     order_items AS oi ON o.order_id = oi.order_id
+> JOIN
+>     products AS p ON oi.product_id = p.product_id
+> WHERE
+>     o.order_date >= '2024-01-01'
+> ORDER BY
+>     o.order_date DESC, c.customer_name ASC;
 
 ## 3. Deploy the ADK agent to Agent Engine
 
