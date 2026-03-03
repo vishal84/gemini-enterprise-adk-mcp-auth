@@ -83,3 +83,8 @@ See the scenario_2/README.md file for a comprehensive guide that covers:
 - Registering a Gemini Enterprise `auth_id` used for end user authentication.
 - Deploying the ADK agent to Agent Engine and registering with Gemini Enterprise.
 
+```bash
+uv run adk deploy agent_engine --display_name "User Info Agent" --description "ADK agent that returns user information from an MCP server hosted on Cloud Run" --env_file .env ./agent_engine/
+```
+copy agent_id to .env file
+

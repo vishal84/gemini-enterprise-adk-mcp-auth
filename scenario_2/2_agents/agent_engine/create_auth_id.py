@@ -83,10 +83,10 @@ def main():
 
     except google.auth.exceptions.DefaultCredentialsError:
         logger.error("Authentication failed. Please run 'gcloud auth application-default login'.")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"An error occurred during the API request: {e}")
-        if e.response:
-            logger.error(f"Response body: {e.response.text}")
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"An HTTP error occurred during the API request: {e}")
+        # Log the response body which often contains helpful error details
+        logger.error(f"Response body: {e.response.text}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
 

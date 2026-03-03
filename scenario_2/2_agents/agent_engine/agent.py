@@ -28,7 +28,11 @@ AUTH_ID = os.getenv("AUTH_ID", "user-info-auth")
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
-DYNAMIC_AUTH_ID_KEY = "oauth2_auth_code_flow.access_token" # Internal key for the token
+
+# dynamic_auth_config is the parameter that will be injected into the tool call 
+# arguments by the before_tool_callback function. The MCP tool implementation will look for this parameter and use it to authenticate to the MCP server using the end users credentials. The internal key "oauth2_auth_code_flow.access_token" is used to store the access token in the dynamic_auth_config dictionary, which is then serialized to a JSON string and passed as an argument in the tool call. The header provider can then extract the token from the dynamic_auth_config and use it to set the Authorization header when making requests to the MCP server.
+DYNAMIC_AUTH_PARAM_NAME = "dynamic_auth_config" # Name of the parameter to inject
+DYNAMIC_AUTH_INTERNAL_KEY = "oauth2_auth_code_flow.access_token" # Internal key for the token
 
 # This function retrieves a token for authenticating to the Cloud Run service using the end users credentials via an auth_id 
 # registered to Gemini Enterprise. The token is used in the Authorization header when making requests to the MCP 
@@ -46,11 +50,11 @@ def dynamic_token_injection(tool: BaseTool, args: Dict[str, Any], tool_context: 
         return None
     
     access_token = tool_context.state[token_key]
-    dynamic_auth_config = { DYNAMIC_AUTH_ID_KEY: access_token }
+    dynamic_auth_config = { DYNAMIC_AUTH_INTERNAL_KEY: access_token }
 
     # this injects the token into the tool call arguments so that 
     # it can be used by the header provider to authenticate to the MCP server
-    args["dynamic_auth_config"] = json.dumps(dynamic_auth_config)
+    args[DYNAMIC_AUTH_PARAM_NAME] = json.dumps(dynamic_auth_config)
     logger.info(f"Arguments after injection: {args}")
 
     return None
@@ -83,10 +87,15 @@ cloud_run_mcp = McpToolset(
 root_agent = LlmAgent(
     model="gemini-2.5-pro",
     name="code_snippet_agent",
-    instruction="""You are a code snippet agent that has access to an MCP tool used to retrieve code snippets.
-    - If a user asks what you can do, answer that you can provide code snippets from the MCP tool you have access to.
-    - Provide the types of snippets you can return i.e. sql, python, javascript, json, or go.
-    - Always use the MCP tool to get code snippets, never make up code snippets on your own.
+    instruction="""You are a helpful agent that has access to an MCP tool used to retrieve an end users information.
+    - If a user asks what you can do, answer that you can provide information about them that the MCP server has access to such as their name, email, and profile picture.
+    - Always use the MCP tool `get_user_info_from_access_token` to get user information, never make up user information on your own.
+
+    **CRITICAL: Authentication - `dynamicAuthConfig` Parameter**
+
+        *   **MANDATORY:** Every function call to the MCP tool **MUST** include the `dynamicAuthConfig` parameter in the function call.
+        *   **SYSTEM HANDLED:** Your role is to ensure you *always* include `dynamicAuthConfig` in your function call requests. Example is as follows: { "oauth2_auth_code_flow.access_token": "fe1yWdWelYG0zgayBHtz7fzx15E_Yyt6tGjVYDEsn6UNp9ly0ytY02aoYtphaG4rY-FPiEO8k5JfHSIhN-JWuA" }
+        *   **VALIDATION:** The system expects `dynamicAuthConfig` to be present and valid. Do not attempt to generate or modify its value.
     """,
     tools=[cloud_run_mcp],
     before_tool_callback=[dynamic_token_injection]

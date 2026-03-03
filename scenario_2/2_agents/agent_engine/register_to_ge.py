@@ -20,7 +20,7 @@ def main():
 
     # --- Environment Variables ---
     logger.info("Loading environment variables...")
-    env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
+    env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
     load_dotenv(dotenv_path=env_path)
     env_vars = dotenv_values(dotenv_path=env_path)
 
@@ -55,7 +55,7 @@ def main():
         access_token = credentials.token
 
         api_url = (
-            f"https://discoveryengine.googleapis.com/v1alpha/projects/{project}/locations/global/"
+            f"https://discoveryengine.googleapis.com/v1alpha/projects/{GOOGLE_CLOUD_PROJECT_NUMBER}/locations/global/"
             f"collections/default_collection/engines/{GEMINI_ENTERPRISE_APP_ID}/assistants/default_assistant/agents"
         )
 
@@ -68,8 +68,10 @@ def main():
                 },
                 "provisioned_reasoning_engine": {
                     "reasoning_engine": AGENT_ENGINE_ID
-                },
-                "authorizations": [
+                }
+            },
+            "authorization_config": {
+                "tool_authorizations": [
                     f"projects/{GOOGLE_CLOUD_PROJECT_NUMBER}/locations/global/authorizations/{AUTH_ID}"
                 ]
             }
@@ -78,7 +80,7 @@ def main():
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
-            "x-goog-user-project": project,
+            "x-goog-user-project": GOOGLE_CLOUD_PROJECT_NUMBER,
         }
 
         response = requests.post(api_url, headers=headers, data=json.dumps(payload))
@@ -89,10 +91,10 @@ def main():
 
     except google.auth.exceptions.DefaultCredentialsError:
         logger.error("Authentication failed. Please run 'gcloud auth application-default login'.")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"An error occurred during the API request: {e}")
-        if e.response:
-            logger.error(f"Response body: {e.response.text}")
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"An HTTP error occurred during the API request: {e}")
+        # Log the response body which often contains helpful error details
+        logger.error(f"Response body: {e.response.text}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
 
