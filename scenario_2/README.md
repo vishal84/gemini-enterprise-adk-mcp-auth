@@ -155,29 +155,17 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 4. Sample agent interaction below:
 
 
-```diff
-+ User: Hi! What can you do?
-```
+> User: Hi! What can you do?
 
-```diff
-- Agent: Hi there! I can provide information about you that the MCP server has access to, such as your name, email, and profile picture. How can I help you today?
-```
+> Agent: Hi there! I can provide information about you that the MCP server has access to, such as your name, email, and profile picture. How can I help you today?
 
-```diff
-+ User: whats my email address?
-```
+> User: whats my email address?
 
-```diff
-- Agent: Your email address is ******@********.com.
-```
+> Agent: Your email address is ******@********.com.
 
-```diff
-+ User: whats my name?
-```
+> User: whats my name?
 
-```diff
-- Agent: Your name is ****** ********.
-```
+> Agent: Your name is ****** ********.
 
 ## 3. Deploy the ADK agent to Agent Engine
 
