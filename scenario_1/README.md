@@ -164,7 +164,6 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 4. Sample agent interaction below:
 
-> [!NOTE]
 > User: Hi! What can you do?
 
 
