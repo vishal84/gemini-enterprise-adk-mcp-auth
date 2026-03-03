@@ -14,10 +14,6 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
     logger = logging.getLogger(__name__)
 
-    # --- Agent Configuration ---
-    AGENT_DISPLAY_NAME = "User Info Agent"
-    AGENT_DESCRIPTION = "An ADK agent that returns information about an end user from an MCP server hosted on Cloud Run."
-
     # --- Environment Variables ---
     logger.info("Loading environment variables...")
     env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
@@ -25,10 +21,12 @@ def main():
     env_vars = dotenv_values(dotenv_path=env_path)
 
     required_vars = [
-        "AGENT_ENGINE_ID",
-        "GEMINI_ENTERPRISE_APP_ID", # Also referred to as as_app in the API
+        "AUTH_ID",
+        "CLIENT_ID",
+        "CLIENT_SECRET",
+        "AUTH_URI",
+        "TOKEN_URI",
         "GOOGLE_CLOUD_PROJECT_NUMBER",
-        "AUTH_ID"
     ]
 
     missing_vars = [var for var in required_vars if not env_vars.get(var)]
@@ -37,16 +35,18 @@ def main():
         logger.error("Please add them to your .env file in the '2_agents' directory.")
         return
 
-    AGENT_ENGINE_ID = env_vars.get("AGENT_ENGINE_ID")
-    GEMINI_ENTERPRISE_APP_ID = env_vars.get("GEMINI_ENTERPRISE_APP_ID")
-    GOOGLE_CLOUD_PROJECT_NUMBER = env_vars.get("GOOGLE_CLOUD_PROJECT_NUMBER")
     AUTH_ID = env_vars.get("AUTH_ID")
+    CLIENT_ID = env_vars.get("CLIENT_ID")
+    CLIENT_SECRET = env_vars.get("CLIENT_SECRET")
+    AUTH_URI = env_vars.get("AUTH_URI")
+    TOKEN_URI = env_vars.get("TOKEN_URI")
+    GOOGLE_CLOUD_PROJECT_NUMBER = env_vars.get("GOOGLE_CLOUD_PROJECT_NUMBER")
 
     logger.info("Successfully loaded environment variables.")
 
-    # --- Registration Logic ---
+    # --- AUTH_ID Registration Logic ---
     try:
-        logger.info("Attempting to register agent with Gemini Enterprise...")
+        logger.info("Attempting to register AUTH_ID with Gemini Enterprise...")
 
         # Get default credentials and project ID from the environment
         credentials, project = google.auth.default()
@@ -55,23 +55,17 @@ def main():
         access_token = credentials.token
 
         api_url = (
-            f"https://discoveryengine.googleapis.com/v1alpha/projects/{project}/locations/global/"
-            f"collections/default_collection/engines/{GEMINI_ENTERPRISE_APP_ID}/assistants/default_assistant/agents"
+            f"https://discoveryengine.googleapis.com/v1alpha/projects/{GOOGLE_CLOUD_PROJECT_NUMBER}/locations/global/"
+            f"authorizations?authorizationId={AUTH_ID}"
         )
 
         payload = {
-            "displayName": AGENT_DISPLAY_NAME,
-            "description": AGENT_DESCRIPTION,
-            "adk_agent_definition": {
-                "tool_settings": {
-                    "tool_description": "An ADK agent that returns information about an end user from an MCP server hosted on Cloud Run.",
-                },
-                "provisioned_reasoning_engine": {
-                    "reasoning_engine": AGENT_ENGINE_ID
-                },
-                "authorizations": [
-                    f"projects/{GOOGLE_CLOUD_PROJECT_NUMBER}/locations/global/authorizations/{AUTH_ID}"
-                ]
+            "name": f"projects/{GOOGLE_CLOUD_PROJECT_NUMBER}/locations/global/authorizations/{AUTH_ID}",
+            "serverSideOauth2": {
+                "clientId": f"{CLIENT_ID}",
+                "clientSecret": f"{CLIENT_SECRET}",
+                "authorizationUri": f"{AUTH_URI}",
+                "tokenUri": f"{TOKEN_URI}"
             }
         }
 
@@ -84,7 +78,7 @@ def main():
         response = requests.post(api_url, headers=headers, data=json.dumps(payload))
         response.raise_for_status() # Raise an exception for bad status codes
 
-        logger.info("✅ Successfully registered agent to Gemini Enterprise!")
+        logger.info("✅ Successfully registered AUTH_ID to Gemini Enterprise!")
         logger.info(f"💬 Response: {response.json()}")
 
     except google.auth.exceptions.DefaultCredentialsError:
