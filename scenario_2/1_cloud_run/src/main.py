@@ -3,7 +3,6 @@ import logging
 import os
 import contextvars
 import requests
-from typing import List, Dict, Any
 
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_headers

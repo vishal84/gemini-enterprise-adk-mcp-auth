@@ -50,12 +50,15 @@ def dynamic_token_injection(tool: BaseTool, args: Dict[str, Any], tool_context: 
         return None
     
     access_token = tool_context.state[token_key]
-    dynamic_auth_config = { DYNAMIC_AUTH_INTERNAL_KEY: access_token }
+    tool_context.state[AUTH_ID] = access_token
+    logger.info(f"Token injected into tool context state under key '{AUTH_ID}': {access_token}'")
 
-    # this injects the token into the tool call arguments so that 
-    # it can be used by the header provider to authenticate to the MCP server
-    args[DYNAMIC_AUTH_PARAM_NAME] = json.dumps(dynamic_auth_config)
-    logger.info(f"Arguments after injection: {args}")
+    # dynamic_auth_config = { DYNAMIC_AUTH_INTERNAL_KEY: access_token }
+
+    # # this injects the token into the tool call arguments so that 
+    # # it can be used by the header provider to authenticate to the MCP server
+    # args[DYNAMIC_AUTH_PARAM_NAME] = json.dumps(dynamic_auth_config)
+    # logger.info(f"Arguments after injection: {args}")
 
     return None
 
@@ -90,13 +93,13 @@ root_agent = LlmAgent(
     instruction="""You are a helpful agent that has access to an MCP tool used to retrieve an end users information.
     - If a user asks what you can do, answer that you can provide information about them that the MCP server has access to such as their name, email, and profile picture.
     - Always use the MCP tool `get_user_info_from_access_token` to get user information, never make up user information on your own.
-
-    **CRITICAL: Authentication - `dynamicAuthConfig` Parameter**
-
-        *   **MANDATORY:** Every function call to the MCP tool **MUST** include the `dynamicAuthConfig` parameter in the function call.
-        *   **SYSTEM HANDLED:** Your role is to ensure you *always* include `dynamicAuthConfig` in your function call requests. Example is as follows: { "oauth2_auth_code_flow.access_token": "fe1yWdWelYG0zgayBHtz7fzx15E_Yyt6tGjVYDEsn6UNp9ly0ytY02aoYtphaG4rY-FPiEO8k5JfHSIhN-JWuA" }
-        *   **VALIDATION:** The system expects `dynamicAuthConfig` to be present and valid. Do not attempt to generate or modify its value.
     """,
     tools=[cloud_run_mcp],
     before_tool_callback=[dynamic_token_injection]
 )
+
+# **CRITICAL: Authentication - `dynamicAuthConfig` Parameter**
+
+#         *   **MANDATORY:** Every function call to the MCP tool **MUST** include the `dynamicAuthConfig` parameter in the function call.
+#         *   **SYSTEM HANDLED:** Your role is to ensure you *always* include `dynamicAuthConfig` in your function call requests. Example is as follows: { "oauth2_auth_code_flow.access_token": "fe1yWdWelYG0zgayBHtz7fzx15E_Yyt6tGjVYDEsn6UNp9ly0ytY02aoYtphaG4rY-FPiEO8k5JfHSIhN-JWuA" }
+#         *   **VALIDATION:** The system expects `dynamicAuthConfig` to be present and valid. Do not attempt to generate or modify its value.
