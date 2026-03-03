@@ -28,14 +28,14 @@ AUTH_ID = os.getenv("AUTH_ID", "user-info-auth")
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
-DYNAMIC_AUTH_INTERNAL_KEY = ""
+DYNAMIC_AUTH_ID_KEY = "oauth2_auth_code_flow.access_token" # Internal key for the token
 
 # This function retrieves a token for authenticating to the Cloud Run service using the end users credentials via an auth_id 
 # registered to Gemini Enterprise. The token is used in the Authorization header when making requests to the MCP 
 # server running on Cloud Run to run tool calls as the end user.
 def dynamic_token_injection(tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext) -> Optional[Dict]:
     token_key = None
-    pattern = re.compile(r'^AUTH_ID.*')
+    pattern = re.compile(f'' + AUTH_ID + '.*')
 
     state_dict = tool_context.state.to_dict()
     matched_auth = {key: value for key, value in state_dict.items() if pattern.match(key)}
@@ -46,11 +46,13 @@ def dynamic_token_injection(tool: BaseTool, args: Dict[str, Any], tool_context: 
         return None
     
     access_token = tool_context.state[token_key]
-    dynamic_auth_config = {DYNAMIC_AUTH_INTERNAL_KEY: access_token}
+    dynamic_auth_config = { DYNAMIC_AUTH_ID_KEY: access_token }
 
     # this injects the token into the tool call arguments so that 
     # it can be used by the header provider to authenticate to the MCP server
     args["dynamic_auth_config"] = json.dumps(dynamic_auth_config)
+    logger.info(f"Arguments after injection: {args}")
+
     return None
 
 def mcp_header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:

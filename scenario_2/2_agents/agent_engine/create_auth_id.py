@@ -16,7 +16,7 @@ def main():
 
     # --- Environment Variables ---
     logger.info("Loading environment variables...")
-    env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
+    env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
     load_dotenv(dotenv_path=env_path)
     env_vars = dotenv_values(dotenv_path=env_path)
 
