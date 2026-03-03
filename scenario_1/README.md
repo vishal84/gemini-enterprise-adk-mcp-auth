@@ -164,9 +164,9 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 4. Sample agent interaction below:
 
-```diff
-+ User: Hi! What can you do?
-```
+> [!NOTE]
+> User: Hi! What can you do?
+
 
 ```diff
 - Agent: Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?
