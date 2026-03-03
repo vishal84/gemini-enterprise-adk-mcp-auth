@@ -161,7 +161,7 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 > User: whats my email address?
 
-> Agent: Your email address is ******@********.com.
+> Agent: Your email address is zzzzzz@yyyyy.com.
 
 > User: whats my name?
 
