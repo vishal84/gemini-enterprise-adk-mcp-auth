@@ -27,7 +27,7 @@ logger = logging.getLogger()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-MCP_SERVER_AUTH_URL = os.getenv("MCP_SERVER_AUTH_URL", "MCP SERVER AUTH URL NOT SET")
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "MCP SERVER URL NOT SET")
 
 # Define the OAuth2 authentication scheme for OpenID Connect with Google as the provider. The token returned
 # by this flow will be used to provide the MCP server headers it can use to make authorization decisions based 
@@ -117,7 +117,7 @@ def mcp_logger(log_statement: str):
 
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
-        url=MCP_SERVER_AUTH_URL,
+        url=MCP_SERVER_URL,
     ),
     header_provider=mcp_header_provider,
     auth_scheme=auth_scheme,
