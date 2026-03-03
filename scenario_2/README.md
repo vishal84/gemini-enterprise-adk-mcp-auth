@@ -154,29 +154,30 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 4. Sample agent interaction below:
 
-<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>User:</strong> Hi! What can you do?
-</div>
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>Agent:</strong> Hi there! I can provide information about you that the MCP server has access to, such as your name, email, and profile picture. How can I help you today?
-</div>
+```diff
++ User: Hi! What can you do?
+```
 
-<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
-  <strong>User:</strong> whats my email address?
-</div>
+```diff
+- Agent: Hi there! I can provide information about you that the MCP server has access to, such as your name, email, and profile picture. How can I help you today?
+```
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>Agent:</strong> Your email address is ******@********.com.
-</div>
+```diff
++ User: whats my email address?
+```
 
-<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
-  <strong>User:</strong> whats my name?
-</div>
+```diff
+- Agent: Your email address is ******@********.com.
+```
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>Agent:</strong> Your name is ****** ********.
-</div>
+```diff
++ User: whats my name?
+```
+
+```diff
+- Agent: Your name is ****** ********.
+```
 
 ## 3. Deploy the ADK agent to Agent Engine
 
