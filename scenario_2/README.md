@@ -196,3 +196,47 @@ Once the agent is deployed you will see output in the terminal similar to the fo
 ```
 
 Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder under the key `AGENT_ENGINE_ID`.
+
+## 4. Create an Authorization Resource for End User Authentication in Gemini Enterprise
+
+In order for the Gemini Enterprise frontend web application to authenticate an end user when an agent is invoked, you must create an [authorization resource](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#add-authorization-resource). You can do so using the Cloud Console UI or [API](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#add-authorization-resource).
+
+From the `scenario_2/` folder, run the `create_auth_id.py` script to register the authorization resource to Gemini Enterprise:
+
+```bash
+uv run agent_engine/create_auth_id.py
+```
+
+When the script finishes, you should see output similar to the following:
+
+```text
+✅ Successfully registered AUTH_ID to Gemini Enterprise!
+💬 Response: ......
+```
+
+## 5. Register the ADK agent with Gemini Enterprise
+
+To register the ADK agent with Gemini Enterprise, you can use the Cloud Console UI or [API](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#register_adk_agent-drest).
+
+From the `scenario_2/` folder, run the `register_to_ge.py` script to register the agent to Gemini Enterprise:
+
+```bash
+uv run agent_engine/register_to_ge.py
+```
+
+When the script finishes, you should see output similar to the following:
+
+```text
+✅ Successfully registered agent to Gemini Enterprise!
+💬 Response: ......
+```
+
+Now that the agent has been registered to Gemini Enterprise with the associated Authorization Resource, you are ready to test the agent in the app.
+
+3. Open the Gemini Enterprise application you registered the agent to in your web browser.
+
+4. From the main chat interface, navigate to **Agents** > **Code Snippet Agent**
+
+5. Run the same sample queries provided for testing locally. The output will look similar to the below image:
+
+![alt text](./img/gemini_enterprise_uia.png)
