@@ -9,6 +9,21 @@ The MCP server is hosted on Cloud Run and provides tools that return sample code
 
 To access these tools, the ADK agent's service account must be granted the **Cloud Run Invoker** role.
 
+## Prerequisites
+
+You must create and update the `.env` file used by the applications in this scenario. An `.env.example` file is found for each in the `1_cloud_run` and `2_agents` folders. 
+
+1. In the `scenario_2` folder:
+
+```bash
+cp 1_cloud_run/.env.example 1_cloud_run/.env
+cp 2_agents/.env.example 2_agents/.env
+```
+
+2. Modify the `PROJECT_ID` and `REGION` values found in the `1_cloud_run` folder to your GCP project and region.
+
+3. Modify the `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION` and `GEMINI_ENTERPRISE_APP_ID` to the values corresponding to your GCP project.
+
 To begin, you will deploy the Cloud Run server by building a container of the MCP server found in the `1_cloud_run/` directory.  Once deployed you will follow steps to test the ADK agent locally using `adk web` then deploy it to Agent Engine and register it with Gemini Enterprise.
 
 ## 1. Deploy the MCP Server to Cloud Run
@@ -121,7 +136,13 @@ When the script is finished executing you will see it has confirmed the creation
 * A staging bucket `agent-staging-[project-id]`
 * The roles above granted to the service account
 
-3. Run the following command:
+3. Run the following commands:
+
+```bash
+uv sync
+```
+
+Then run:
 
 ```bash
 uv run adk web
@@ -143,41 +164,40 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 4. Sample agent interaction below:
 
-<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>User:</strong> Hi! What can you do?
-</div>
+```diff
++ User: Hi! What can you do?
+```
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>Agent:</strong> Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?
-</div>
+```diff
+- Agent: Hello! I can provide you with code snippets for sql, python, javascript, json, or go. What type of code snippet would you like?
+```
 
-<div style="background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000000">
-  <strong>User:</strong> Provide me with a SQL code snippet
-</div>
+```diff
++ User: Provide me with a SQL code snippet
+```
 
-<div style="background-color: #00aeff; border-radius: 8px; padding: 12px; margin-bottom: 10px; color: #000">
-  <strong>Agent:</strong>
-<pre><code>SELECT
-    o.order_id,
-    o.order_date,
-    c.customer_name,
-    p.product_name,
-    oi.quantity,
-    oi.price_per_unit
-FROM
-    orders AS o
-JOIN
-    customers AS c ON o.customer_id = c.customer_id
-JOIN
-    order_items AS oi ON o.order_id = oi.order_id
-JOIN
-    products AS p ON oi.product_id = p.product_id
-WHERE
-    o.order_date >= '2024-01-01'
-ORDER BY
-    o.order_date DESC, c.customer_name ASC;
-</code></pre>
-</div>
+```diff
+- Agent:
+- SELECT
+-     o.order_id,
+-     o.order_date,
+-     c.customer_name,
+-     p.product_name,
+-     oi.quantity,
+-     oi.price_per_unit
+- FROM
+-     orders AS o
+- JOIN
+-     customers AS c ON o.customer_id = c.customer_id
+- JOIN
+-     order_items AS oi ON o.order_id = oi.order_id
+- JOIN
+-     products AS p ON oi.product_id = p.product_id
+- WHERE
+-     o.order_date >= '2024-01-01'
+- ORDER BY
+-     o.order_date DESC, c.customer_name ASC;
+```
 
 ## 3. Deploy the ADK agent to Agent Engine
 
