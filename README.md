@@ -72,6 +72,8 @@ See the `scenario_1/README.md` file for a comprehensive guide that covers:
 - Running the ADK agent locally with `adk web`.
 - Deploying the ADK agent to Agent Engine and registering with Gemini Enterprise.
 
+The logical architecture for Scenario 1 is below once deployed to Gemini Enterprise. The key item to note is that the agent uses the service account (the agent instance's identity) to provide an `Authentication` header with bearer token to the Cloud Run hosted MCP server to utilize the tools it makes available.
+
 ![Scenario 1 Logical Architecture](./scenario_1/img/scenario1_logical.png)
 
 ## Scenario 2: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using End User Based Authentication
@@ -84,5 +86,7 @@ See the `scenario_2/README.md` file for a comprehensive guide that covers:
 - Running the ADK agent locally with adk web.
 - Registering a Gemini Enterprise `auth_id` used for end user authentication.
 - Deploying the ADK agent to Agent Engine and registering with Gemini Enterprise.
+
+The logical architecture for Scenario 2 is below once deployed to Gemini Enterprise. The key item to note is that the agent uses an Authorization Resource configured with Gemini Enterprise to obtain credentials for the end user that invokes the agent from the main chat interface. Once the credentials are obtained it provides them as an `Authorization` header with bearer token to the Cloud Run hosted MCP server which checks the `Authorization` header for a valid token before allowing the agent to invoke an MCP tool on the end user's behalf.
 
 ![Scenario 2 Logical Architecture](./scenario_2/img/scenario2_logical.png)
