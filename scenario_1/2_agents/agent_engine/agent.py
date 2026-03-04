@@ -7,6 +7,7 @@ import google.auth.transport.requests
 import google.oauth2.id_token
 
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
 
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
@@ -37,15 +38,19 @@ def get_cloud_run_token(target_url: str) -> str:
     return id_token
 
 def mcp_logger(log_statement: str):
+
     logger.info(f"[McpToolset] {log_statement}", exc_info=True)
+
+def header_provider(readonly_context: ReadonlyContext) -> dict[str, str]:
+    return {
+        "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}"
+    }
 
 cloud_run_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(
-        url=MCP_SERVER_URL,
-        headers={
-            "Authorization": f"Bearer {get_cloud_run_token(MCP_SERVER_URL)}",
-        }
+        url=MCP_SERVER_URL
     ),
+    header_provider=header_provider,
     errlog=mcp_logger,
 )
 
