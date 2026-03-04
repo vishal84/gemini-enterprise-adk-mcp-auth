@@ -62,6 +62,8 @@ This project uses `uv` to manage Python dependencies. To install `uv`, do the fo
         powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
         ```
 
+Once the prerequisite setup has been completed, you can proceed to each scenario found in this repository to deploy the agents provided.
+
 ## Scenario 1: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using Service to Service Authentication
 
 In scenario 1, you will deploy an MCP server hosted on Cloud Run and test its invocation using `adk web` locally and when deployed to Agent Engine and registered with Gemini Enterprise.
