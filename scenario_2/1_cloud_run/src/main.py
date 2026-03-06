@@ -95,7 +95,10 @@ def get_user_info_from_access_token(context: MiddlewareContext) -> str:
     except requests.exceptions.HTTPError as e:
         logger.error(f"HTTP Error while calling userinfo endpoint: {e}")
         if e.response.status_code == 401:
-            return "Error: The provided access token is invalid or expired."
+            return "[401 Unauthorized]: The provided access token is invalid or expired."
+        
+        if e.response.status_code == 403:
+            return "[403 Forbidden]: The provided access token does not have required permissions to access this resource."
         return f"Error: Failed to retrieve user info. Server returned status {e.response.status_code}."
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
