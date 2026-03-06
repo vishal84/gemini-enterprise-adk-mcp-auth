@@ -40,8 +40,6 @@ class AuthMiddleware(Middleware):
             token = auth_header.split()[1]
             logger.info(f">>> 🛡️ AuthMiddleware: token: {token}")
 
-            # In a real application, you would validate the token here.
-            # For this example, we'll just log that it's present and extracted.
             # Store the token in the context for other tools/dependencies to use
             user_token.set(token)
             logger.info(">>> 🛡️ AuthMiddleware: Bearer token found and stored in context.")
