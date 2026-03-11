@@ -22,8 +22,7 @@ if ! gcloud iam service-accounts describe "${SERVICE_ACCOUNT_EMAIL}" --project "
     echo "🤖 Creating service account ${SERVICE_ACCOUNT_EMAIL}..."
     gcloud iam service-accounts create "${SA_NAME}" \
         --display-name="Agent Engine Service Account" \
-        --project="${PROJECT_ID}" \
-        --condition=None > /dev/null
+        --project="${PROJECT_ID}" > /dev/null
 else
     echo "✅ Service account ${SERVICE_ACCOUNT_EMAIL} already exists."
 fi
@@ -31,14 +30,12 @@ fi
 # Grant Cloud Run Invoker role
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
-    --role="roles/run.invoker" \
-    --condition=None > /dev/null
+    --role="roles/run.invoker" > /dev/null
 
 # Grant Logs Writer role
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
-    --role="roles/logging.logWriter" \
-    --condition=None > /dev/null
+    --role="roles/logging.logWriter" > /dev/null
 
 echo "✅ Roles granted successfully."
 

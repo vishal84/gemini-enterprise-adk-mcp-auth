@@ -75,7 +75,7 @@ The ``deploy.sh`` script automates the deployment of a containerized application
   <p><strong>🚨 Important:</strong> Ensure the URL ends with <code>/mcp</code>.</p>
 </div>
 
-### Test the MCP Server
+### Test the MCP Server Locally via Cloud Run Proxy
 
 To quickly test the deployed MCP server on Cloud Run, run the `test_mcp_client.py` script.
 

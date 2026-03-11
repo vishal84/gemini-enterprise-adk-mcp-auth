@@ -51,26 +51,22 @@ COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 # Grant Cloud Run Admin role to the Cloud Build SA to allow it to deploy
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${CLOUDBUILD_SA}" \
-    --role="roles/run.admin" \
-    --condition=None > /dev/null
+    --role="roles/run.admin" > /dev/null
 
 # Grant Service Account User role to the Cloud Build SA to allow it to act as the Cloud Run service's identity
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${CLOUDBUILD_SA}" \
-    --role="roles/iam.serviceAccountUser" \
-    --condition=None > /dev/null
+    --role="roles/iam.serviceAccountUser" > /dev/null
 
 # Grant Cloud Run Admin role to the default Compute Engine SA
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${COMPUTE_SA}" \
-    --role="roles/run.admin" \
-    --condition=None > /dev/null
+    --role="roles/run.admin" > /dev/null
 
 # Grant Service Account User role to the Compute Engine SA to allow it to act as the Cloud Run service's identity
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${COMPUTE_SA}" \
-    --role="roles/iam.serviceAccountUser" \
-    --condition=None > /dev/null
+    --role="roles/iam.serviceAccountUser" > /dev/null
 
 echo "🚀 Starting Cloud Build with the following configuration:"
 echo "   Project: ${PROJECT_ID}"
