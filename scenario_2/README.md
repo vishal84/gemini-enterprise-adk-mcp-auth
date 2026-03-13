@@ -124,7 +124,7 @@ Similar to Scenario 1 in this repo, the ``deploy.sh`` script automates the deplo
 
 To run the ADK agent locally using `adk web` run do the following:
 
-1. Navigate to the `2_adk_agents` directory:
+1. Navigate to the `2_agents/` directory:
 
 2. Run the following command:
 
@@ -171,7 +171,7 @@ This will run the [ADK web](https://google.github.io/adk-docs/runtime/web-interf
 
 Now that you've tested the ADK agent locally, it can be deployed to Agent Engine.
 
-Run the following command from the `2_adk_agents` directory to deploy the agent:
+Run the following command from the `2_agents/` directory to deploy the agent:
 
 ```bash
 uv run adk deploy agent_engine --display_name "User Info Agent" --description "ADK agent that returns user information from an MCP server hosted on Cloud Run" --env_file .env ./agent_engine/
