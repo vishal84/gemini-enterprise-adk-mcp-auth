@@ -189,7 +189,7 @@ Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder 
 
 In order for the Gemini Enterprise frontend web application to authenticate an end user when an agent is invoked, you must create an [authorization resource](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#add-authorization-resource). You can do so using the Cloud Console UI or [API](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#add-authorization-resource).
 
-From the `scenario_2/` folder, run the `create_auth_id.py` script to register the authorization resource to Gemini Enterprise:
+From the `scenario_2/2_agents/` folder, run the `create_auth_id.py` script to register the authorization resource to Gemini Enterprise:
 
 ```bash
 uv run agent_engine/create_auth_id.py
