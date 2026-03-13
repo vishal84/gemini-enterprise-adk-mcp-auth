@@ -94,7 +94,7 @@ Proxying to Cloud Run service [code-snippet-mcp-server] in project [project-id] 
 http://127.0.0.1:8080 proxies to https://code-snippet-mcp-server-ofleaf4vuq-uc.a.run.app
 ```
 
-3. In a new terminal window, execute the test script:
+3. In a new terminal window, execute the test script from the `1_cloud_run/` directory:
 
 ```bash
 uv run python test_mcp_client.py
