@@ -13,7 +13,7 @@ To access these tools, the ADK agent's service account must be granted the **Clo
 
 You must create and update the `.env` file used by the applications in this scenario. An `.env.example` file is found for each in the `1_cloud_run` and `2_agents` folders. 
 
-1. In the `scenario_2` folder:
+1. In the `scenario_1` folder:
 
 ```bash
 cp 1_cloud_run/.env.example 1_cloud_run/.env
