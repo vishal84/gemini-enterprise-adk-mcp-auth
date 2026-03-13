@@ -30,7 +30,7 @@ gcloud projects list --filter="PROJECT_ID:$GOOGLE_CLOUD_PROJECT" --format="value
 
 ## 1. OAuth Consent Configuration
 
-This setup involves configuring the OAuth consent screen and credentials in your Google Cloud Project and then registering those credentials as an Authorization Resource for use in agentic workflows (e.g.,Genini Enterprise). If you’ve already set up OAuth consent in your project you will not need to perform this step.
+This setup involves configuring the OAuth consent screen and credentials in your Google Cloud Project and then registering those credentials as an Authorization Resource for use in agentic workflows (e.g., Gemini Enterprise). If you’ve already set up OAuth consent in your project you will not need to perform this step.
 
 ### Step 1: Configure the OAuth Consent Screen
 In the Google Cloud Console:
