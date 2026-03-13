@@ -110,7 +110,7 @@ Now that you've confirmed your MCP server is up and running on Cloud Run you wil
 
 To run the ADK agent locally using `adk web` run do the following:
 
-1. Navigate to the `2_adk_agents` directory:
+1. Navigate to the `2_agents/` directory:
 
 2. Run the `setup.sh` script:
 
