@@ -1,4 +1,4 @@
-# Scenario 2: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using End User Authentication
+my# Scenario 2: Deploy an ADK Agent w/ MCP Toolset in Gemini Enterprise using End User Authentication
 
 This scenario guides you through setting up and testing an ADK agent that consumes a toolset from an MCP server using end user authentication. The guide covers two deployment options for the agent:
 
@@ -206,7 +206,7 @@ When the script finishes, you should see output similar to the following:
 
 To register the ADK agent with Gemini Enterprise, you can use the Cloud Console UI or [API](https://docs.cloud.google.com/gemini/enterprise/docs/register-and-manage-an-adk-agent#register_adk_agent-drest).
 
-From the `scenario_2/` folder, run the `register_to_ge.py` script to register the agent to Gemini Enterprise:
+From the `scenario_2/2_agents/` folder, run the `register_to_ge.py` script to register the agent to Gemini Enterprise:
 
 ```bash
 uv run agent_engine/register_to_ge.py
