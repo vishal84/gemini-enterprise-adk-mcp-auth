@@ -120,6 +120,12 @@ Similar to Scenario 1 in this repo, the ``deploy.sh`` script automates the deplo
   <p><strong>🚨 Important:</strong> Ensure the URL ends with <code>/mcp</code>.</p>
 </div>
 
+Double check the deployment in the Cloud Console UI after finished (your organization's policies might set this to authenticated by default despite the flag to allow public access when deploying the Cloud Run service). In this scenario, you allow public access rather than use IAM to secure Cloud Run. This is secure as the MCP server validates the token passed in via the `Authentication` header sent to the server.
+
+Ensure that the Security tab shows `Allow public access` for the service. If not update the setting and select **Save**.
+
+![Confirm Public Access](./img/allow_public_access.png)
+
 ## 2. Run the ADK agent locally
 
 To run the ADK agent locally using `adk web` run do the following:
@@ -227,4 +233,4 @@ Now that the agent has been registered to Gemini Enterprise with the associated 
 
 5. Run the same sample queries provided for testing locally. The output will look similar to the below image:
 
-![alt text](./img/gemini_enterprise_uia.png)
+![Gemini Enterprise UI](./img/gemini_enterprise_uia.png)
