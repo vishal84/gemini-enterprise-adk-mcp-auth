@@ -25,7 +25,7 @@ cp 2_agents/.env.example 2_agents/.env
 3. Modify the `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_PROJECT_NUMBER`, `GOOGLE_CLOUD_LOCATION` and `GEMINI_ENTERPRISE_APP_ID` in the '2_agents/' folder to the values corresponding to your GCP project. You can find the project number by running the `gcloud` command below:
 
 ```bash
-gcloud projects list --filter="PROJECT_ID:$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)"
+gcloud projects list --filter="PROJECT_ID:$(gcloud config get-value project)" --format="value(PROJECT_NUMBER)"
 ```
 
 ## 1. OAuth Consent Configuration
@@ -115,10 +115,11 @@ Similar to Scenario 1 in this repo, the ``deploy.sh`` script automates the deplo
 6.  **🎉 Provides Service URL:**
     *   Once the deployment is complete, the script fetches the URL of your newly deployed service and prints it to the console. 
 
-<div style="border-left: 6px solid #acacb0; background-color: #5a5a5a; padding: 15px; margin: 20px 0;">
-  <p>⚠️ <strong>Important:</strong> Copy the service URL from the previous step and paste it into the <code>.env</code> file located in the <code>2_agents/</code> directory. Set it as the value for the <code>MCP_SERVER_URL</code> variable.</p>
-  <p><strong>🚨 Important:</strong> Ensure the URL ends with <code>/mcp</code>.</p>
-</div>
+Double check the deployment in the Cloud Console UI after finished (your organization's policies might set this to authenticated by default despite the flag to allow public access when deploying the Cloud Run service). In this scenario, you allow public access rather than use IAM to secure Cloud Run. This is secure as the MCP server validates the token passed in via the `Authentication` header sent to the server.
+
+Ensure that the Security tab shows `Allow public access` for the service. If not update the setting and select **Save**.
+
+![Confirm Public Access](./img/allow_public_access.png)
 
 ## 2. Run the ADK agent locally
 
@@ -227,4 +228,4 @@ Now that the agent has been registered to Gemini Enterprise with the associated 
 
 5. Run the same sample queries provided for testing locally. The output will look similar to the below image:
 
-![alt text](./img/gemini_enterprise_uia.png)
+![Gemini Enterprise UI](./img/gemini_enterprise_uia.png)
