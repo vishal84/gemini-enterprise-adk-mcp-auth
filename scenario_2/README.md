@@ -25,7 +25,7 @@ cp 2_agents/.env.example 2_agents/.env
 3. Modify the `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_PROJECT_NUMBER`, `GOOGLE_CLOUD_LOCATION` and `GEMINI_ENTERPRISE_APP_ID` in the '2_agents/' folder to the values corresponding to your GCP project. You can find the project number by running the `gcloud` command below:
 
 ```bash
-gcloud projects list --filter="PROJECT_ID:$GOOGLE_CLOUD_PROJECT" --format="value(PROJECT_NUMBER)"
+gcloud projects list --filter="PROJECT_ID:$(gcloud config get-value project)" --format="value(PROJECT_NUMBER)"
 ```
 
 ## 1. OAuth Consent Configuration
