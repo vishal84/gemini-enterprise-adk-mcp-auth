@@ -69,7 +69,7 @@ Click **Create**.
 - ⚠️ You should see a dialog showing you your newly created **Client ID** and **Client secret**. 
 - 🚨 Copy these values immediately and store them in the `.env` file located in the `2_agents/` directory. You’ll need to reference these values in a later step.
 
-Now that you’ve created an OAuth consent configuration and application credentials, you can run the steps found in the git repository’s README file to deploy the MCP server and test the agents.
+Now that you’ve created an OAuth consent configuration and application credential.
 
 ## 2. Deploy the MCP Server to Cloud Run
 
