@@ -13,7 +13,7 @@ To access these tools, the ADK agent's service account must be granted the **Clo
 
 You must create and update the `.env` file used by the applications in this scenario. An `.env.example` file is found for each in the `1_cloud_run` and `2_agents` folders. 
 
-1. In the `scenario_2` folder:
+1. In the `scenario_1` folder:
 
 ```bash
 cp 1_cloud_run/.env.example 1_cloud_run/.env
@@ -94,7 +94,7 @@ Proxying to Cloud Run service [code-snippet-mcp-server] in project [project-id] 
 http://127.0.0.1:8080 proxies to https://code-snippet-mcp-server-ofleaf4vuq-uc.a.run.app
 ```
 
-3. In a new terminal window, execute the test script:
+3. In a new terminal window, execute the test script from the `1_cloud_run/` directory:
 
 ```bash
 uv run python test_mcp_client.py
@@ -214,7 +214,7 @@ Copy the agent engine resource ID to your `.env` file in the `2_agents/` folder 
 
 ### Add permissions to the default Agent Engine Service Account
 
-To test locally you used a service account created with the `Cloud Run Invoker` and `Logs Writer` IAM roles added to it. When deploying to Agent Engine a default service account is created upon first deployment that can be used as the agent instance's identity. Grant the default service account the same roles as the service account created earlier:
+To test locally you used a service account created with the `Cloud Run Invoker` and `Logs Writer` IAM roles added to it. When deploying to Agent Engine a default service account is created upon first deployment that can be used as the agent instance's identity. Grant the default service account the same roles as the service account created earlier by running the commands below:
 
 ```bash
 export PROJECT_ID=$(gcloud config get-value project)

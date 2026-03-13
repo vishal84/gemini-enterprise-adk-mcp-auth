@@ -72,6 +72,11 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --role="roles/iam.serviceAccountUser" \
     --condition=None > /dev/null
 
+# Grant Storage Object Viewer role to the Cloud Build SA to allow it to read source from GCS
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/storage.objectViewer" > /dev/null
+
 echo "🚀 Starting Cloud Build with the following configuration:"
 echo "   Project: ${PROJECT_ID}"
 echo "   Region: ${REGION}"

@@ -37,6 +37,12 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${SERVICE_ACCOUNT_EMAIL}" \
     --role="roles/logging.logWriter" > /dev/null
 
+# Grant the user running the script the ability to create OIDC tokens for the service account
+USER_ACCOUNT=$(gcloud config get-value account)
+gcloud iam service-accounts add-iam-policy-binding "${SERVICE_ACCOUNT_EMAIL}" \
+    --member="user:${USER_ACCOUNT}" \
+    --role="roles/iam.serviceAccountOpenIdTokenCreator" > /dev/null
+
 echo "✅ Roles granted successfully."
 
 # Create a staging bucket for agent engine deployments
