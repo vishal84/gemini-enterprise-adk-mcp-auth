@@ -198,7 +198,7 @@ ORDER BY
 
 Now that you've tested the ADK agent locally, it can be deployed to Agent Engine. You will use the [adk deploy CLI command](https://google.github.io/adk-docs/api-reference/cli/#adk-deploy) to deploy the agent which greatly simplifies the process. Once deployed to Agent Engine, you will register it with Gemini Enterprise in a later task.
 
-Run the following command from the `2_adk_agents` directory to deploy the agent:
+Run the following command from the `2_agents/` directory to deploy the agent:
 
 ```bash
 uv run adk deploy agent_engine --display_name "Code Snippet Agent" --description "ADK agent that returns code snippets from an MCP server hosted on Cloud Run" --env_file .env ./agent_engine/
