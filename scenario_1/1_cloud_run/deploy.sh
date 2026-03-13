@@ -68,6 +68,11 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${CLOUDBUILD_SA}" \
     --role="roles/logging.logWriter" > /dev/null
 
+# Grant Artifact Registry Writer role to the Cloud Build SA to allow it to upload artifacts
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${CLOUDBUILD_SA}" \
+    --role="roles/artifactregistry.writer" > /dev/null
+
 # Grant Cloud Run Admin role to the default Compute Engine SA
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${COMPUTE_SA}" \
@@ -87,6 +92,11 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${COMPUTE_SA}" \
     --role="roles/logging.logWriter" > /dev/null
+
+# Grant Artifact Registry Writer role to the Compute Engine SA to allow it to upload artifacts
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/artifactregistry.writer" > /dev/null
 
 echo "🚀 Starting Cloud Build with the following configuration:"
 echo "   Project: ${PROJECT_ID}"
