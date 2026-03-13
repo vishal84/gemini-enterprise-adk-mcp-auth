@@ -29,6 +29,7 @@ steps:
       # This flag ensures at least one container is always running to avoid cold starts
       - '--min-instances=1'
       # This flag makes the service public
+      # This is secure because the MCP server will validate the user's token for authentication and authorization
       - '--allow-unauthenticated'
 
 # Substitution variables - should match .env file
