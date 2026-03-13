@@ -115,11 +115,6 @@ Similar to Scenario 1 in this repo, the ``deploy.sh`` script automates the deplo
 6.  **🎉 Provides Service URL:**
     *   Once the deployment is complete, the script fetches the URL of your newly deployed service and prints it to the console. 
 
-<div style="border-left: 6px solid #acacb0; background-color: #5a5a5a; padding: 15px; margin: 20px 0;">
-  <p>⚠️ <strong>Important:</strong> Copy the service URL from the previous step and paste it into the <code>.env</code> file located in the <code>2_agents/</code> directory. Set it as the value for the <code>MCP_SERVER_URL</code> variable.</p>
-  <p><strong>🚨 Important:</strong> Ensure the URL ends with <code>/mcp</code>.</p>
-</div>
-
 Double check the deployment in the Cloud Console UI after finished (your organization's policies might set this to authenticated by default despite the flag to allow public access when deploying the Cloud Run service). In this scenario, you allow public access rather than use IAM to secure Cloud Run. This is secure as the MCP server validates the token passed in via the `Authentication` header sent to the server.
 
 Ensure that the Security tab shows `Allow public access` for the service. If not update the setting and select **Save**.
