@@ -58,6 +58,11 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${CLOUDBUILD_SA}" \
     --role="roles/iam.serviceAccountUser" > /dev/null
 
+# Grant Storage Object Viewer role to the Cloud Build SA to allow it to read source from GCS
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${CLOUDBUILD_SA}" \
+    --role="roles/storage.objectViewer" > /dev/null
+
 # Grant Cloud Run Admin role to the default Compute Engine SA
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${COMPUTE_SA}" \
@@ -67,6 +72,11 @@ gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${COMPUTE_SA}" \
     --role="roles/iam.serviceAccountUser" > /dev/null
+
+# Grant Storage Object Viewer role to the Compute Engine SA to allow it to read source from GCS
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${COMPUTE_SA}" \
+    --role="roles/storage.objectViewer" > /dev/null
 
 echo "🚀 Starting Cloud Build with the following configuration:"
 echo "   Project: ${PROJECT_ID}"
