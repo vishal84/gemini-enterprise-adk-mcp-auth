@@ -74,11 +74,6 @@ The ``deploy.sh`` script automates the deployment of a containerized application
 6.  **🎉 Provides Service URL:**
     *   Once the deployment is complete, the script fetches the URL of your newly deployed service and prints it to the console. 
 
-<div style="border-left: 6px solid #acacb0; background-color: #5a5a5a; padding: 15px; margin: 20px 0;">
-  <p>⚠️ <strong>Important:</strong> Copy the service URL from the previous step and paste it into the <code>.env</code> file located in the <code>2_agents/</code> directory. Set it as the value for the <code>MCP_SERVER_URL</code> variable.</p>
-  <p><strong>🚨 Important:</strong> Ensure the URL ends with <code>/mcp</code>.</p>
-</div>
-
 ### Test the MCP Server Locally via Cloud Run Proxy
 
 To quickly test the deployed MCP server on Cloud Run, run the `test_mcp_client.py` script.
