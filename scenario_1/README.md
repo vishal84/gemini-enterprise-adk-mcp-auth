@@ -22,7 +22,11 @@ cp 2_agents/.env.example 2_agents/.env
 
 2. Modify the `PROJECT_ID` and `REGION` values found in the `1_cloud_run` folder to your GCP project and region.
 
-3. Modify the `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION` and `GEMINI_ENTERPRISE_APP_ID` to the values corresponding to your GCP project.
+3. Modify the `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_PROJECT_NUMBER`, `GOOGLE_CLOUD_LOCATION` and `GEMINI_ENTERPRISE_APP_ID` in the '2_agents/' folder to the values corresponding to your GCP project. You can find the project number by running the `gcloud` command below:
+
+```bash
+gcloud projects list --filter="PROJECT_ID:$(gcloud config get-value project)" --format="value(PROJECT_NUMBER)"
+```
 
 To begin, you will deploy the Cloud Run server by building a container of the MCP server found in the `1_cloud_run/` directory.  Once deployed you will follow steps to test the ADK agent locally using `adk web` then deploy it to Agent Engine and register it with Gemini Enterprise.
 
