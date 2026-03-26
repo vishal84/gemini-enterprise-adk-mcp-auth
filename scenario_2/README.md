@@ -226,6 +226,6 @@ Now that the agent has been registered to Gemini Enterprise with the associated 
 
 4. From the main chat interface, navigate to **Agents** > **User Info Agent**
 
-5. Run the same sample queries provided for testing locally. Upon your first interaction you will be challenged to log in with end user credentials. The output will look similar to the below image:
+5. Run the same sample queries provided for testing locally. Upon your first interaction you will be challenged to log in with end user credentials. Click the **Authorize** button that appears to login, then continue with the prompts outlined. The output will look similar to the below image:
 
 ![Gemini Enterprise UI](./img/gemini_enterprise_uia.png)
