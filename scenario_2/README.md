@@ -224,8 +224,8 @@ Now that the agent has been registered to Gemini Enterprise with the associated 
 
 3. Open the Gemini Enterprise application you registered the agent to in your web browser.
 
-4. From the main chat interface, navigate to **Agents** > **Code Snippet Agent**
+4. From the main chat interface, navigate to **Agents** > **User Info Agent**
 
-5. Run the same sample queries provided for testing locally. The output will look similar to the below image:
+5. Run the same sample queries provided for testing locally. Upon your first interaction you will be challenged to log in with end user credentials. The output will look similar to the below image:
 
 ![Gemini Enterprise UI](./img/gemini_enterprise_uia.png)
